@@ -2,7 +2,7 @@ import React from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import useAxios from './useAxios'
-import { fetchStart, getBlogsSuccess, getCategoriesSuccess } from '../features/blogsSlice'
+import { fetchStart, getBlogsSuccess, getCategoriesSuccess, getUsersSuccess, likedSuccess } from '../features/blogsSlice'
 
 const useBlogRequests = () => {
     const dispatch = useDispatch()
@@ -12,9 +12,9 @@ const useBlogRequests = () => {
     const getBlogs = async ()=> {
         dispatch(fetchStart())
         try {
-            const {data} = await axiosPublic("/blogs/?limit=8&page=1")
-            console.log(data)
-            dispatch(getBlogsSuccess(data))
+            const res = await axiosPublic("/blogs/?limit=8&page=2")
+            console.log(res)
+            dispatch(getBlogsSuccess(res.data))
         } catch (error) {
             console.log(error)
         }
@@ -22,10 +22,32 @@ const useBlogRequests = () => {
     const getCategories = async ()=> {
         dispatch(fetchStart())
         try {
-            const {data} = await axiosPublic("/categories")
+            const {data:{data}} = await axiosPublic("/categories")
             console.log(data)
             const categories = data.map(item=> item.name)
             dispatch(getCategoriesSuccess(categories))
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    const getUsers = async ()=> {
+        dispatch(fetchStart())
+        try {
+            const {data} = await axiosToken("/users")
+            console.log(data)
+            
+            dispatch(getUsersSuccess(data))
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    const likesss = async (id)=> {
+        dispatch(fetchStart())
+        try {
+            await axiosToken.post("/blogs/"+id+"/postLike", {})
+            
+            dispatch(likedSuccess())
+            getBlogs()
         } catch (error) {
             console.log(error)
         }
@@ -34,7 +56,7 @@ const useBlogRequests = () => {
 
 
 
-  return {getBlogs, getCategories}
+  return {getBlogs, getCategories,getUsers, likesss}
 }
 
 export default useBlogRequests

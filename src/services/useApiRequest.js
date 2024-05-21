@@ -24,6 +24,7 @@ const useApiRequest = () => {
      
       const { data } = await axiosPublic.post("/auth/login/", userData)
       dispatch(loginSuccess(data))
+      console.log(data)
       toastSuccessNotify("Login işlemi başarılı")
       navigate("/")
     } catch (error) {

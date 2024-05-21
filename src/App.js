@@ -6,6 +6,7 @@ import store from "./app/store";
 import { ToastContainer } from "react-toastify";
 import Navbar from "./components/Navbar";
 import { BrowserRouter } from "react-router-dom";
+import Footer from "./components/Footer";
 
 function App() {
   const theme = createTheme({
@@ -25,6 +26,7 @@ function App() {
           <Provider store={store}>
             <Navbar />
             <AppRouter />
+            <Footer sx={{ mt: 5, mb:2 }}/>
           </Provider>
           <ToastContainer />
         </ThemeProvider>
