@@ -18,7 +18,7 @@ const IconComp = ({ blog, users, page,inBlog }) => {
   
 
  
-
+console.log(likers)
   const getLikers = (likes) => {
     return likes
       ?.map((userId) => users.find((user) => user._id === userId)?.username)
