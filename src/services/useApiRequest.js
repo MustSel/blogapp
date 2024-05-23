@@ -26,7 +26,7 @@ const useApiRequest = () => {
       dispatch(loginSuccess(data))
       console.log(data)
       toastSuccessNotify("Login işlemi başarılı")
-      navigate("/")
+      navigate(-1)
     } catch (error) {
       dispatch(fetchFail())
       toastErrorNotify("Login başarısız oldu")

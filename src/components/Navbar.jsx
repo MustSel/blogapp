@@ -6,18 +6,21 @@ import useBlogRequests from "../services/useBlogRequests";
 
 // Profile Dropdown
 const ProfileDropDown = (props) => {
+  const defaultProfilImage =
+    "https://icons.veryicon.com/png/o/miscellaneous/standard/avatar-15.png";
   const [state, setState] = useState(false);
   const profileRef = useRef();
 
-  const handleLogout = () => {
-    props.logout();
+  const handleLogout = async () => {
+   await props.logout();
     setState(false);
+     window.location.reload()
   };
 
   const navigation = [
     { title: "Dashboard", path: "/dashboard" },
     { title: "Settings", path: "/settings" },
-    { title: "Log out", path: "#", onClick: handleLogout },
+    { title: "Log out",  path: "#", onClick: handleLogout },
   ];
 
   useEffect(() => {
@@ -41,13 +44,13 @@ const ProfileDropDown = (props) => {
           onClick={() => setState(!state)}
         >
           <img
-            src="https://randomuser.me/api/portraits/men/46.jpg"
-            className="w-full h-full rounded-full"
+            src={props.user.profilImage || defaultProfilImage}
+            className="w-full h-full rounded-full "
           />
         </button>
         <div className="lg:hidden">
-          <span className="block">Micheal John</span>
-          <span className="block text-sm text-gray-500">john@gmail.com</span>
+          <span className="block">{props.user.username}</span>
+          <span className="block text-sm text-gray-500">{props.user.email}</span>
         </div>
       </div>
       <ul
@@ -84,7 +87,7 @@ export default () => {
     getCategories();
   }, []);
   const { categories } = useSelector((state) => state.blogs);
-  console.log(categories);
+  
 
 
   const dropdownNavs = categories.map((item) => ({
@@ -115,6 +118,7 @@ export default () => {
   });
   const [menuState, setMenuState] = useState(false);
   const { user } = useSelector((state) => state.auth);
+  
   const { logout } = useApiRequest();
   const { getCategories } = useBlogRequests();
 
@@ -213,6 +217,14 @@ export default () => {
                             <li key={idx}>
                               <Link
                                 to={dropdownItem.path}
+                                onClick={() =>(setDrapdownState({
+                                    idx,
+                                    isActive: !drapdownState.isActive,
+                                  }),
+                                  setMenuState(false))
+                                  
+                                  
+                                }
                                 className="flex gap-3 items-center"
                               >
                                 <div className="w-12 h-12 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center duration-150 group-hover:bg-indigo-600 group-hover:text-white md:w-14 md:h-14">
@@ -238,22 +250,24 @@ export default () => {
                 );
               })}
             </ul>
-            {user ? (
+            {user.username ? (
               <ProfileDropDown
                 class="mt-5 pt-5 border-t lg:hidden"
                 logout={logout}
+                user={user}
               />
             ) : (
               <div className="mt-5 pt-5  lg:hidden">
                 <Link
                   to="login"
+                  onClick={()=>setMenuState(false)}
                   className="block py-3 text-center text-gray-700 hover:text-indigo-600 border rounded-lg "
                 >
                   Log in
                 </Link>
                 <Link
                   to="register"
-                //   className="block py-3 px-4 font-medium text-center text-white bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 active:shadow-none rounded-lg shadow md:inline"
+                  onClick={()=>setMenuState(false)}
                   className="block py-3 px-4 font-medium text-center text-white bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 active:shadow-none mt-2 rounded-lg shadow "
                 >
                   Sign up
@@ -287,8 +301,8 @@ export default () => {
             </form>
           </div>
           <div >
-            {user ? (
-              <ProfileDropDown class="hidden lg:block" logout={logout} />
+            {user.username ? (
+              <ProfileDropDown class="hidden lg:block" logout={logout} user={user} />
             ) : (
               <div className="hidden lg:flex lg:gap-2 ">
                 <Link
