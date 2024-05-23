@@ -16,7 +16,7 @@ const IconComp = ({ blog, users, page,inBlog }) => {
   const [likers, setLikers] = useState([]);
   const [userLiked, setUserLiked] = useState(blog?.likes?.includes(currentUserId));
   
-console.log(pages)
+
  
 
   const getLikers = (likes) => {
