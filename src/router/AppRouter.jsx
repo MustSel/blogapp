@@ -5,6 +5,8 @@ import Register from "../pages/Register";
 import PrivateRouter from "./PrivateRouter";
 import Home from "../pages/Home";
 import BlogDetails from "../pages/BlogDetails";
+import AddBlog from "../pages/AddBlog";
+
 
 const AppRouter = () => {
   return (
@@ -14,6 +16,7 @@ const AppRouter = () => {
       <Route path="register" element={<Register />} />
       <Route path="" element={<PrivateRouter />}>
         <Route path="details/:id" element={<BlogDetails />} />
+        <Route path="addblog" element={<AddBlog />} />
       </Route>
     </Routes>
   );

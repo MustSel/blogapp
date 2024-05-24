@@ -91,7 +91,7 @@ export default () => {
 
 
   const dropdownNavs = categories.map((item) => ({
-    title: item,
+    title: item.name,
     desc: "Duis aute irure dolor in reprehenderit",
     path: `/${item}`,
     icon: (
@@ -125,7 +125,7 @@ export default () => {
   // Replace javascript:void(0) path with your path
   const navigation = [
     { title: "Categories", path: "#", isDrapdown: true, navs: dropdownNavs },
-    { title: "Careers", path: "#" },
+    { title: "New Blog", path: "addblog" },
     { title: "Guides", path: "#" },
     { title: "Partners", path: "#" },
   ];

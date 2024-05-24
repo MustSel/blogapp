@@ -6,6 +6,7 @@ import { GrView } from "react-icons/gr";
 import { Button, Tooltip } from "@mui/material";
 import { useSelector } from "react-redux";
 import useBlogRequests from "../services/useBlogRequests";
+import IconComp from "./IconComp";
 
 const Card = ({ blog, users, page,liked }) => {
   const currentUserId = useSelector((state) => state.auth.user?.currentUserId);
@@ -84,7 +85,7 @@ const Card = ({ blog, users, page,liked }) => {
           {blog?.content}
         </p>
       </div>
-      <div className="flex justify-between flex-nowrap items-center space-x-4 mt-2 mb-2">
+      {/* <div className="flex justify-between flex-nowrap items-center space-x-4 mt-2 mb-2">
         <div className="flex justify-between flex-nowrap items-center space-x-4 mx-2 gap-4">
           <Tooltip
             title={likers.length ? likers.join(", ") : "No likes yet"}
@@ -114,6 +115,10 @@ const Card = ({ blog, users, page,liked }) => {
             <Link to={`/details/${blog._id}`}>Read More</Link>
           </Button>
         </div>
+      </div> */}
+      <div className=" w-96">
+
+      <IconComp users={users} blog={blog} />
       </div>
     </article>
   );

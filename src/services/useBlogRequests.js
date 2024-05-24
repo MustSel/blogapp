@@ -21,15 +21,16 @@ const useBlogRequests = () => {
     dispatch(fetchStart());
     try {
       const res = await axiosPublic(
-        "/blogs/?sort[createdAt]=desc&&limit=6&page=" + page
+        "/blogs/?sort[createdAt]=asc&limit=6&page=" + page
       );
       console.log(res);
       dispatch(getBlogsSuccess(res.data));
-      // dispatch(getPagesSuccess(res.data.details.pages));
+      
     } catch (error) {
       console.log(error);
     }
   };
+  
   const getBlogDetails = async (id) => {
     dispatch(fetchStart());
     try {
@@ -47,8 +48,8 @@ const useBlogRequests = () => {
         data: { data },
       } = await axiosPublic("/categories");
 
-      const categories = data.map((item) => item.name);
-      dispatch(getCategoriesSuccess(categories));
+      
+      dispatch(getCategoriesSuccess(data));
     } catch (error) {
       console.log(error);
     }
@@ -72,8 +73,39 @@ const useBlogRequests = () => {
       console.log(error);
     }
   };
+  const addBlog = async (blogData) => {
+    try {
+      const { data } = await axiosToken.post("/blogs/", blogData);
+      console.log(data);
+      toastSuccessNotify("Blog Başarıyla Paylaşıldı.")
+      navigate("/")
+    } catch (error) {
+      console.log(error);
+      toastErrorNotify("Blog Paylaşılamadı.");
+    }
+  };
+  const editBlog = async (id,blogData) => {
+    try {
+      const res = await axiosToken.put("/blogs/"+id, blogData);
+      console.log(res);
+      toastSuccessNotify("Blog Başarıyla Düzenlendi.")
+    } catch (error) {
+      console.log(error);
+      toastErrorNotify("Blog Düzenlenemedi.");
+    }
+  };
+  const deleteBlog = async (id) => {
+    try {
+      const res = await axiosToken.delete("/blogs/"+id);
+      console.log(res);
+      toastSuccessNotify("Blog Başarıyla Silindi")
+    } catch (error) {
+      console.log(error);
+      toastErrorNotify("Blog Silinemedi")
+    }
+  };
 
-  return { getBlogs, getCategories, getUsers, likesss, getBlogDetails };
+  return { getBlogs, getCategories, getUsers, likesss, getBlogDetails, addBlog, editBlog, deleteBlog };
 };
 
 export default useBlogRequests;

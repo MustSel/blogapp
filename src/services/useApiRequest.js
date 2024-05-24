@@ -37,14 +37,17 @@ const useApiRequest = () => {
   const register = async (userInfo) => {
     dispatch(fetchStart())
     try {
-      
       const { data } = await axiosPublic.post("/users/", userInfo)
       dispatch(registerSuccess(data))
+      toastSuccessNotify("Kayıt başarılı")
       navigate("/")
     } catch (error) {
       dispatch(fetchFail())
+      toastErrorNotify("Kayıt başarısız oldu")
+      console.log(error)
     }
   }
+  
   const logout = async () => {
     dispatch(fetchStart())
     try {
