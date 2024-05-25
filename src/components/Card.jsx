@@ -1,20 +1,15 @@
 import React from "react";
 import IconComp from "./IconComp";
 
-const Card = ({ blog, users}) => {
-  
- 
-
-
+const Card = ({ blog, users }) => {
   const defaultImage =
     "https://geekflare.com/wp-content/uploads/2016/04/featured-image-generator.jpg";
   const defaultAuthorImage =
     "https://icons.veryicon.com/png/o/miscellaneous/standard/avatar-15.png";
 
-
-
+   
   return (
-    <article className="max-w-md mx-auto mt-4 shadow-lg border rounded-md duration-300 hover:shadow-sm">
+    <article className="max-w-full mx-auto mt-4 shadow-lg border rounded-md duration-300 hover:shadow-sm">
       <img
         src={blog?.image || defaultImage}
         onError={(e) => {
@@ -52,10 +47,14 @@ const Card = ({ blog, users}) => {
           {blog?.content}
         </p>
       </div>
-      
-      <div className=" w-96">
 
-      <IconComp users={users} blog={blog} />
+      <div className=" w-96">
+        <IconComp
+          users={users}
+          blog={blog}
+         
+          
+        />
       </div>
     </article>
   );

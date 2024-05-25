@@ -4,10 +4,12 @@ import { useNavigate } from "react-router-dom";
 import useAxios from "./useAxios";
 import {
   fetchStart,
+  getAllBlogsSuccess,
   getBlogDetailsSuccess,
   getBlogsSuccess,
   getCategoriesSuccess,
   getSingleUserSuccess,
+  getUserBlogsSuccess,
   getUsersSuccess,
   likedSuccess,
 } from "../features/blogsSlice";
@@ -21,10 +23,26 @@ const useBlogRequests = () => {
     dispatch(fetchStart());
     try {
       const res = await axiosPublic(
-        "/blogs/?sort[createdAt]=asc&limit=6&page=" + page
+        "/blogs/?sort[createdAt]=desc&limit=6&page=" + page
       );
       console.log(res);
       dispatch(getBlogsSuccess(res.data));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getUserBlogs = async (id) => {
+    dispatch(fetchStart());
+    try {
+      const { data } = await axiosPublic(
+        "/blogs/?filter[isPublish]=false&filter[userId]=" + id
+      );
+      const res = await axiosPublic(
+        "/blogs/?filter[isPublish]=true&filter[userId]=" + id
+      );
+      console.log(data);
+      dispatch(getUserBlogsSuccess({ data, res }));
     } catch (error) {
       console.log(error);
     }
@@ -54,16 +72,15 @@ const useBlogRequests = () => {
   };
   const getUsers = async (id) => {
     try {
-      if(id){
-      const { data } = await axiosToken("/users/"+id);
-      console.log(data);
-      dispatch(getSingleUserSuccess(data));
+      if (id) {
+        const { data } = await axiosAdminToken("/users/" + id);
+        console.log(data);
+        dispatch(getSingleUserSuccess(data));
+      } else {
+        const { data } = await axiosAdminToken("/users");
+        console.log(data);
+        dispatch(getUsersSuccess(data));
       }
-      const { data } = await axiosAdminToken("/users");
-      console.log(data);
-      dispatch(getUsersSuccess(data));
-
-      
     } catch (error) {
       console.log(error);
     }
@@ -121,10 +138,13 @@ const useBlogRequests = () => {
         const res = await axiosToken.delete("/comments/" + id);
         toastSuccessNotify("Yorum Başarıyla Silindi");
         console.log(res);
-      } else if(!id&&commentData) {
+      } else if (!id && commentData) {
         const res = await axiosToken.post("/comments/", commentData);
         toastSuccessNotify("Yorum Başarıyla Eklendi");
         console.log(res);
+      } else if(!id && !commentData)  {
+        const res = await axiosToken("/comments/?filter[userId]=65343222b67e9681f937f001")
+        console.log(res)
       }
     } catch (error) {
       toastErrorNotify("Yorum ekleme başarısız oldu");
@@ -142,6 +162,7 @@ const useBlogRequests = () => {
     editBlog,
     deleteBlog,
     handleComments,
+    getUserBlogs,
   };
 };
 

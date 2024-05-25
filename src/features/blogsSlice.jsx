@@ -2,6 +2,10 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   blogs: [],
+  userBlogs: {
+    published:[],
+    drafted:[]
+  },
   blogDetails: [],
   users: [],
   userDetails: [],
@@ -19,7 +23,7 @@ const initialState = {
       isPublish: false,
     },
   },
-
+  showComments: false,
   loading: false,
   error: false,
 };
@@ -36,6 +40,12 @@ const blogsSlice = createSlice({
       state.loading = false;
       state.blogs = payload.data;
       state.pages = payload.details.pages;
+    },
+    getUserBlogsSuccess: (state, { payload:{data,res} }) => {
+      state.loading = false;
+      state.userBlogs.drafted = data.data;
+      state.userBlogs.published = res.data.data;
+      console.log(data, res)
     },
     getSingleUserSuccess: (state, { payload }) => {
       state.loading = false;
@@ -62,6 +72,9 @@ const blogsSlice = createSlice({
     setEditMode: (state, { payload }) => {
       state.editMode = payload;
     },
+    setShowComments : (state) => {
+      state.showComments = !state.showComments
+    }
   },
 });
 
@@ -73,7 +86,9 @@ export const {
   likedSuccess,
   getBlogDetailsSuccess,
   setEditMode,
-  getSingleUserSuccess
+  getSingleUserSuccess,
+  setShowComments,
+  getUserBlogsSuccess
 } = blogsSlice.actions;
 
 export default blogsSlice.reducer;

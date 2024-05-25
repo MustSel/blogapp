@@ -9,7 +9,7 @@ const Comments = ({ id, comments, users, onCommentChange }) => {
   const [editMode, setEditMode] = useState(false);
   const [editCommentId, setEditCommentId] = useState(null);
   const hrRef = useRef(null);
-
+handleComments()
   const handleChange = (e) => {
     setCommentText(e.target.value);
   };
@@ -19,7 +19,7 @@ const Comments = ({ id, comments, users, onCommentChange }) => {
     setEditCommentId(commentId);
     hrRef.current.scrollIntoView({ behavior: "smooth" });
   };
-
+console.log(comments)
   const handleSubmit = async (e) => {
     e.preventDefault();
     const commentData = {
@@ -42,7 +42,8 @@ const Comments = ({ id, comments, users, onCommentChange }) => {
     <>
       <hr ref={hrRef} className=" mt-10 " />
       <Container maxWidth="md">
-        <Typography mt={4} mx={"auto"} variant="h3">
+        <Box display="flex" flexWrap={"wrap"} justifyContent="center">
+          <Typography mt={4} mx={"auto"} variant="h4" fontWeight={700}>
           Comments
         </Typography>
         <TextField
@@ -55,17 +56,21 @@ const Comments = ({ id, comments, users, onCommentChange }) => {
           margin="normal"
           variant="outlined"
           multiline
-          rows={8}
+          rows={6}
           required
+          sx={{ maxWidth: 800, width: "100%" }}
         />
         <Button
           onClick={handleSubmit}
           variant="contained"
           fullWidth
           color="success"
+          sx={{ maxWidth: 800, width: "100%" }}
         >
           {editMode ? "Update Comment" : "Add Comment"}
         </Button>
+        </Box>
+        
         <Box mt={12} display="flex" flexWrap={"wrap"} justifyContent="center">
           {comments?.map((comment) => (
             <CommentCard

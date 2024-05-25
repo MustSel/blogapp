@@ -9,23 +9,23 @@ import Card from "../components/Card";
 import { Pagination, Stack } from "@mui/material";
 import ScrollToTop from "../components/ScrollToTop";
 
-function Home() {
+function Home({ inBlog, id }) {
   const { user } = useSelector((state) => state.auth);
-  const { getBlogs, getUsers } = useBlogRequests();
-  const { blogs, users, pages } = useSelector((state) => state.blogs);
+  const { getBlogs, getUsers, getUserBlogs } = useBlogRequests();
+  const { blogs, users, pages, userBlogs } = useSelector((state) => state.blogs);
   const [currentPage, setCurrentPage] = useState(pages?.current || 1);
   const { liked } = useSelector((state) => state.blogs);
-  console.log(pages)
+const [drafted,setDrafted] = useState(true)
+  console.log(userBlogs);
+  console.log(inBlog);
   useEffect(() => {
-    getBlogs(currentPage);
-    getUsers();
-    console.log("first");
-  }, [currentPage]);
-
-  useEffect(() => {
-    getBlogs(currentPage);
-    console.log("second");
-  }, [liked]);
+    if (inBlog) {
+      getUserBlogs(id);
+    } else {
+      getBlogs(currentPage);
+      getUsers();
+    }
+  }, [currentPage, liked, id]);
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
@@ -33,7 +33,7 @@ function Home() {
 
   return (
     <>
-    <ScrollToTop/>
+      <ScrollToTop />
       <Box sx={{ flexGrow: 1 }}>
         <Box sx={{ p: 3 }}>
           <section className="mt-12 mx-auto px-4 max-w-screen-xl md:px-8">
@@ -44,7 +44,7 @@ function Home() {
               </p>
             </div>
             <div className="mt-12 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-              {blogs?.map((blog, idx) => (
+              {(inBlog ? (drafted?userBlogs.drafted :userBlogs.published)  : blogs)?.map((blog, idx) => (
                 <Card
                   key={idx}
                   blog={blog}
@@ -64,7 +64,6 @@ function Home() {
               variant="outlined"
               shape="rounded"
             />
-        
           </Stack>
         </Box>
       </Box>
@@ -74,6 +73,17 @@ function Home() {
 
 export default Home;
 
+//? blog button in profil
+//? profil edit user buton
+//? update user fonk
+//? blog comments length + draft sayısı ekle
+//? categories search fonksi
+//?about
+//?404
+//?profile page buton to profil
+//? login- register currentusera gösterme
+//? delete blog warning
+//? navbar username
+//?search buton
+//?categories için home kopyala
 
-//? comment comp
-//? add comment comp

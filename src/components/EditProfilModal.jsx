@@ -2,25 +2,35 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } 
 import { useEffect, useState } from 'react';
 import useAxios from '../services/useAxios';
 
-
 const EditProfileModal = ({ open, onClose, user, onUpdate }) => {
-    const {axiosToken} = useAxios()
-    // Profil bilgileri için state
-
-    
+    const { axiosToken } = useAxios();
     
     const [profileData, setProfileData] = useState({
-        username: user.username,
+        username: user?.username || '',
         password: '',
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        image: user.image,
-        city: user.city,
-        bio: user.bio,
+        email: user?.email || '',
+        firstName: user?.firstName || '',
+        lastName: user?.lastName || '',
+        image: user?.image || '',
+        city: user?.city || '',
+        bio: user?.bio || '',
     });
 
-    // Profil bilgilerindeki değişiklikleri işleme alma
+    useEffect(() => {
+        if (user) {
+            setProfileData({
+                username: user.username,
+                password: '',
+                email: user.email,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                image: user.image,
+                city: user.city,
+                bio: user.bio,
+            });
+        }
+    }, [user]);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setProfileData((prevData) => ({
@@ -29,39 +39,25 @@ const EditProfileModal = ({ open, onClose, user, onUpdate }) => {
         }));
     };
 
-    // Profil bilgilerini güncelleme işlevi
     const handleUpdateProfile = async () => {
         try {
             await axiosToken.put(`/user/${user._id}`, profileData);
-            onUpdate(); // Kullanıcı bilgilerinin güncellendiğini parent bileşene bildir
-            onClose(); // Modalı kapat
+            onUpdate();
+            onClose();
         } catch (error) {
-            console.error('Profil güncelleme hatası:', error);
-            // Hata durumunda gerekli işlemler yapılabilir (örneğin, kullanıcıya bildirim gösterme)
+            console.error('Profile update error:', error);
         }
     };
 
-    useEffect(() => {
-        setProfileData({
-            username: user.username,
-            password: '',
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            image: user.image,
-            city: user.city,
-            bio: user.bio,
-        })
-    }, [])
     return (
         <Dialog open={open} onClose={onClose}>
-            <DialogTitle>Profil Düzenleme</DialogTitle>
+            <DialogTitle>Edit Profile</DialogTitle>
             <DialogContent>
                 <TextField
                     autoFocus
                     margin="dense"
                     name="username"
-                    label="Kullanıcı Adı"
+                    label="Username"
                     type="text"
                     fullWidth
                     value={profileData.username}
@@ -81,7 +77,7 @@ const EditProfileModal = ({ open, onClose, user, onUpdate }) => {
                 <TextField
                     margin="dense"
                     name="firstName"
-                    label="Ad"
+                    label="First Name"
                     type="text"
                     fullWidth
                     value={profileData.firstName}
@@ -91,7 +87,7 @@ const EditProfileModal = ({ open, onClose, user, onUpdate }) => {
                 <TextField
                     margin="dense"
                     name="lastName"
-                    label="Soyad"
+                    label="Last Name"
                     type="text"
                     fullWidth
                     value={profileData.lastName}
@@ -101,16 +97,34 @@ const EditProfileModal = ({ open, onClose, user, onUpdate }) => {
                 <TextField
                     margin="dense"
                     name="image"
-                    label="Profil Fotoğrafı"
+                    label="Profile Image"
                     type="text"
                     fullWidth
                     value={profileData.image}
                     onChange={handleChange}
                 />
+                <TextField
+                    margin="dense"
+                    name="city"
+                    label="City"
+                    type="text"
+                    fullWidth
+                    value={profileData.city}
+                    onChange={handleChange}
+                />
+                <TextField
+                    margin="dense"
+                    name="bio"
+                    label="Bio"
+                    type="text"
+                    fullWidth
+                    value={profileData.bio}
+                    onChange={handleChange}
+                />
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose}>İptal</Button>
-                <Button onClick={handleUpdateProfile}>Güncelle</Button>
+                <Button onClick={onClose}>Cancel</Button>
+                <Button onClick={handleUpdateProfile}>Update</Button>
             </DialogActions>
         </Dialog>
     );

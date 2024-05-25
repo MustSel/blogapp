@@ -11,7 +11,7 @@ const ProfileDropDown = (props) => {
     "https://icons.veryicon.com/png/o/miscellaneous/standard/avatar-15.png";
   const [state, setState] = useState(false);
   const profileRef = useRef();
-
+  const {currentUserId} = useSelector((state) => state.auth.user);
   const handleLogout = async () => {
    await props.logout();
     setState(false);
@@ -19,8 +19,7 @@ const ProfileDropDown = (props) => {
   };
 
   const navigation = [
-    { title: "Dashboard", path: "/dashboard" },
-    { title: "Settings", path: "/settings" },
+    { title: "Profil & Settings", path: `/profil/${currentUserId}` },
     { title: "Log out",  path: "#", onClick: handleLogout },
   ];
 
@@ -142,8 +141,8 @@ export default () => {
   const navigation = [
     { title: "Categories", path: "#", isDrapdown: true, navs: dropdownNavs },
     { title: "New Blog", path: "addblog", onClick:handleNewBlog },
-    { title: "Guides", path: "#" },
-    { title: "Partners", path: "#" },
+    { title: "About", path: "#" },
+    
   ];
 
   useEffect(() => {

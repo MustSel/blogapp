@@ -4,24 +4,25 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import useBlogRequests from '../services/useBlogRequests';
 import { Link, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import IconComp from '../components/IconComp';
 import ScrollToTop from '../components/ScrollToTop';
 import Comments from '../components/Comments';
+import { setShowComments } from '../features/blogsSlice';
 
 export default function BlogDetails() {
     const { id } = useParams();
     const defaultImage = "https://geekflare.com/wp-content/uploads/2016/04/featured-image-generator.jpg";
     const defaultAuthorImage = "https://icons.veryicon.com/png/o/miscellaneous/standard/avatar-15.png";
     
-    
+    const dispatch = useDispatch();
     const { getBlogDetails,getUsers } = useBlogRequests();
-    const { blogDetails: blog, users } = useSelector(state => state.blogs);
+    const { blogDetails: blog, users,showComments } = useSelector(state => state.blogs);
     const [comment, setComment] = useState(false)
-
+    const [redirectToDetails, setRedirectToDetails] = useState(false);
     const refreshBlogDetails = () => {
         getBlogDetails(id);
     };
@@ -30,7 +31,14 @@ export default function BlogDetails() {
         getBlogDetails(id);
         getUsers()
     }, [id]);
-
+ 
+    useEffect(() => {
+        if (showComments) {
+          setComment(true);
+          console.log("first")
+          dispatch(setShowComments())
+        }
+      }, [showComments]);
     
     if (!blog) return null;
 
@@ -77,8 +85,9 @@ export default function BlogDetails() {
             </Box>
             <ScrollToTop/>
         </Container>
-        {comment && <Comments id={blog?._id} comments={blog?.comments} users={users} onCommentChange={refreshBlogDetails} />}
+        {comment && <Comments id={blog?._id} comments={blog?.comments} users={users} redirectToDetails={redirectToDetails} setRedirectToDetails={setRedirectToDetails} onCommentChange={refreshBlogDetails} />}
         </>
         
     );
 }
+
