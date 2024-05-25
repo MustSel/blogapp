@@ -7,7 +7,7 @@ import {
   getBlogDetailsSuccess,
   getBlogsSuccess,
   getCategoriesSuccess,
- 
+  getSingleUserSuccess,
   getUsersSuccess,
   likedSuccess,
 } from "../features/blogsSlice";
@@ -25,12 +25,11 @@ const useBlogRequests = () => {
       );
       console.log(res);
       dispatch(getBlogsSuccess(res.data));
-      
     } catch (error) {
       console.log(error);
     }
   };
-  
+
   const getBlogDetails = async (id) => {
     dispatch(fetchStart());
     try {
@@ -48,22 +47,28 @@ const useBlogRequests = () => {
         data: { data },
       } = await axiosPublic("/categories");
 
-      
       dispatch(getCategoriesSuccess(data));
     } catch (error) {
       console.log(error);
     }
   };
-  const getUsers = async () => {
+  const getUsers = async (id) => {
     try {
+      if(id){
+      const { data } = await axiosToken("/users/"+id);
+      console.log(data);
+      dispatch(getSingleUserSuccess(data));
+      }
       const { data } = await axiosAdminToken("/users");
       console.log(data);
-
       dispatch(getUsersSuccess(data));
+
+      
     } catch (error) {
       console.log(error);
     }
   };
+
   const likesss = async (id) => {
     try {
       const { data } = await axiosToken.post("/blogs/" + id + "/postLike", {});
@@ -77,18 +82,19 @@ const useBlogRequests = () => {
     try {
       const { data } = await axiosToken.post("/blogs/", blogData);
       console.log(data);
-      toastSuccessNotify("Blog Başarıyla Paylaşıldı.")
-      navigate("/")
+      toastSuccessNotify("Blog Başarıyla Paylaşıldı.");
+      navigate("/details/" + data.data._id);
     } catch (error) {
       console.log(error);
       toastErrorNotify("Blog Paylaşılamadı.");
     }
   };
-  const editBlog = async (id,blogData) => {
+  const editBlog = async (id, blogData) => {
     try {
-      const res = await axiosToken.put("/blogs/"+id, blogData);
-      console.log(res);
-      toastSuccessNotify("Blog Başarıyla Düzenlendi.")
+      const { data } = await axiosToken.put("/blogs/" + id, blogData);
+
+      toastSuccessNotify("Blog Başarıyla Düzenlendi.");
+      navigate("/details/" + data?.new?._id);
     } catch (error) {
       console.log(error);
       toastErrorNotify("Blog Düzenlenemedi.");
@@ -96,16 +102,47 @@ const useBlogRequests = () => {
   };
   const deleteBlog = async (id) => {
     try {
-      const res = await axiosToken.delete("/blogs/"+id);
+      const res = await axiosToken.delete("/blogs/" + id);
       console.log(res);
-      toastSuccessNotify("Blog Başarıyla Silindi")
+      toastSuccessNotify("Blog Başarıyla Silindi");
     } catch (error) {
       console.log(error);
-      toastErrorNotify("Blog Silinemedi")
+      toastErrorNotify("Blog Silinemedi");
+    }
+  };
+  const handleComments = async (id, commentData) => {
+    dispatch(fetchStart());
+    try {
+      if (id && commentData) {
+        const res = await axiosToken.put("/comments/" + id, commentData);
+        toastSuccessNotify("Yorum Başarıyla Güncellendi");
+        console.log(res);
+      } else if (id && !commentData) {
+        const res = await axiosToken.delete("/comments/" + id);
+        toastSuccessNotify("Yorum Başarıyla Silindi");
+        console.log(res);
+      } else if(!id&&commentData) {
+        const res = await axiosToken.post("/comments/", commentData);
+        toastSuccessNotify("Yorum Başarıyla Eklendi");
+        console.log(res);
+      }
+    } catch (error) {
+      toastErrorNotify("Yorum ekleme başarısız oldu");
+      console.log(error);
     }
   };
 
-  return { getBlogs, getCategories, getUsers, likesss, getBlogDetails, addBlog, editBlog, deleteBlog };
+  return {
+    getBlogs,
+    getCategories,
+    getUsers,
+    likesss,
+    getBlogDetails,
+    addBlog,
+    editBlog,
+    deleteBlog,
+    handleComments,
+  };
 };
 
 export default useBlogRequests;

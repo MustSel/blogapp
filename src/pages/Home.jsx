@@ -7,13 +7,15 @@ import { useSelector } from "react-redux";
 import useBlogRequests from "../services/useBlogRequests";
 import Card from "../components/Card";
 import { Pagination, Stack } from "@mui/material";
+import ScrollToTop from "../components/ScrollToTop";
 
 function Home() {
   const { user } = useSelector((state) => state.auth);
   const { getBlogs, getUsers } = useBlogRequests();
   const { blogs, users, pages } = useSelector((state) => state.blogs);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(pages?.current || 1);
   const { liked } = useSelector((state) => state.blogs);
+  console.log(pages)
   useEffect(() => {
     getBlogs(currentPage);
     getUsers();
@@ -31,6 +33,7 @@ function Home() {
 
   return (
     <>
+    <ScrollToTop/>
       <Box sx={{ flexGrow: 1 }}>
         <Box sx={{ p: 3 }}>
           <section className="mt-12 mx-auto px-4 max-w-screen-xl md:px-8">
@@ -61,6 +64,7 @@ function Home() {
               variant="outlined"
               shape="rounded"
             />
+        
           </Stack>
         </Box>
       </Box>
@@ -69,3 +73,7 @@ function Home() {
 }
 
 export default Home;
+
+
+//? comment comp
+//? add comment comp

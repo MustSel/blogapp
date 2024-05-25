@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -14,9 +14,9 @@ import {
   Card,
   CardContent,
 } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import useBlogRequests from "../services/useBlogRequests";
-
+import { setEditMode } from "../features/blogsSlice";
 const AddBlog = () => {
   const [formData, setFormData] = useState({
     title: "",
@@ -25,10 +25,11 @@ const AddBlog = () => {
     categoryId: "",
     isPublish: false,
   });
-  const [previewMode, setPreviewMode] = useState(false); // Önizleme modu
-
-  const categories = useSelector((state) => state.blogs.categories);
-  const {addBlog} = useBlogRequests()
+  const [previewMode, setPreviewMode] = useState(false); 
+  const dispatch = useDispatch();
+  const { categories, editMode } = useSelector((state) => state.blogs);
+ 
+  const { addBlog, editBlog } = useBlogRequests();
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -36,7 +37,7 @@ const AddBlog = () => {
       [name]: value,
     }));
   };
-
+  
   const handleToggle = () => {
     setFormData((prevData) => ({
       ...prevData,
@@ -54,8 +55,39 @@ const AddBlog = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    addBlog(formData)
+    if (editMode.mode) {
+      editBlog(editMode?.blogId, formData);
+    } else {
+      addBlog(formData);
+    }
+    dispatch(
+      setEditMode({
+        mode: false,
+        blog: {
+          title: "",
+          image: "",
+          content: "",
+          categoryId: "",
+          isPublish: false,
+        },
+      })
+    );
   };
+
+  useEffect(() => {
+    if (editMode?.mode) {
+      setFormData(editMode?.blog);
+    } else {
+      setFormData({
+        title: "",
+        image: "",
+        content: "",
+        categoryId: "",
+        isPublish: false,
+      })
+
+    }
+  }, [editMode]);
 
   return (
     <Container maxWidth="lg">
@@ -114,7 +146,7 @@ const AddBlog = () => {
               rows={8}
               required
             />
-            
+
             <Box display="flex" justifyContent={"center"} alignItems="center">
               <p>Draft</p>
               <Switch checked={formData.isPublish} onChange={handleToggle} />
@@ -125,12 +157,12 @@ const AddBlog = () => {
                 type="button"
                 variant="contained"
                 onClick={handlePreview}
-                sx={{ mr: 2 }} // Sağa boşluk ekler
+                sx={{ mr: 2 }} 
               >
                 {previewMode ? "Edit" : "Preview"}
               </Button>
               <Button type="submit" variant="contained" color="primary">
-                Add Blog
+                {editMode.mode ? "UpdateBlog" : "Add Blog"}
               </Button>
             </Box>
           </form>

@@ -9,6 +9,8 @@ import useBlogRequests from '../services/useBlogRequests';
 import { Link, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import IconComp from '../components/IconComp';
+import ScrollToTop from '../components/ScrollToTop';
+import Comments from '../components/Comments';
 
 export default function BlogDetails() {
     const { id } = useParams();
@@ -18,6 +20,11 @@ export default function BlogDetails() {
     
     const { getBlogDetails,getUsers } = useBlogRequests();
     const { blogDetails: blog, users } = useSelector(state => state.blogs);
+    const [comment, setComment] = useState(false)
+
+    const refreshBlogDetails = () => {
+        getBlogDetails(id);
+    };
 // console.log(blog)
     useEffect(() => {
         getBlogDetails(id);
@@ -28,9 +35,10 @@ export default function BlogDetails() {
     if (!blog) return null;
 
     const author = users.find(user => user._id === blog?.userId?._id) || {};
-    // console.log(author)
+    console.log(blog)
 
     return (
+        <>
         <Container maxWidth="lg">
             <Box mt={12} display="flex" justifyContent="center">
                 <Card sx={{ maxWidth: 800, width: '100%' }}>
@@ -63,10 +71,14 @@ export default function BlogDetails() {
                             {blog.content}
                         </Typography>
                        
-                        <IconComp users={users} blog={blog} inBlog={true}/>
+                        <IconComp users={users} comment={comment} setComment={setComment} blog={blog} inBlog={true}/>
                     </CardContent>
                 </Card>
             </Box>
+            <ScrollToTop/>
         </Container>
+        {comment && <Comments id={blog?._id} comments={blog?.comments} users={users} onCommentChange={refreshBlogDetails} />}
+        </>
+        
     );
 }

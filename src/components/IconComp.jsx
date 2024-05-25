@@ -9,21 +9,27 @@ import useBlogRequests from "../services/useBlogRequests";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import useAxios from "../services/useAxios";
+import { setEditMode } from "../features/blogsSlice";
 
-const IconComp = ({ blog, users, inBlog }) => {
+const IconComp = ({ blog, users, inBlog,comment, setComment }) => {
+  const dispatch = useDispatch();
   const { liked } = useSelector((state) => state.blogs);
   const { currentUserId } = useSelector((state) => state.auth.user);
-  const { likesss} = useBlogRequests();
-  const {axiosPublic} = useAxios()
+  const { likesss,deleteBlog } = useBlogRequests();
+  const { axiosPublic } = useAxios();
   const [likers, setLikers] = useState([]);
-  const [userLiked, setUserLiked] = useState(blog?.likes?.includes(currentUserId));
+  const [userLiked, setUserLiked] = useState(
+    blog?.likes?.includes(currentUserId)
+  );
   const [likeCount, setLikeCount] = useState(blog?.likes?.length || 0);
 
-console.log(blog)
+ 
   const getLikers = (likes) => {
-    return likes
-      ?.map((userId) => users.find((user) => user._id === userId)?.username)
-      .filter(Boolean) || [];
+    return (
+      likes
+        ?.map((userId) => users.find((user) => user._id === userId)?.username)
+        .filter(Boolean) || []
+    );
   };
 
   useEffect(() => {
@@ -32,17 +38,15 @@ console.log(blog)
   }, [blog?.likes, users]);
 
   useEffect(() => {
-    setUserLiked(blog?.likes?.includes(currentUserId))
+    setUserLiked(blog?.likes?.includes(currentUserId));
     if (liked?.id === blog?._id) {
       setUserLiked(liked?.data?.didUserLike);
-      
     }
   }, [liked, blog?._id]);
 
   const handleLike = async () => {
     await likesss(blog?._id);
     if (inBlog) {
-     
       const updatedBlog = await getUpdatedBlog();
       setLikers(getLikers(updatedBlog.likes));
       setUserLiked(updatedBlog.likes?.includes(currentUserId));
@@ -50,11 +54,9 @@ console.log(blog)
     }
   };
 
-  
   const getUpdatedBlog = async () => {
     try {
-      const response = await axiosPublic(
-        "/blogs");;
+      const response = await axiosPublic("/blogs");
       const updatedBlog = response.data.data.find((b) => b._id === blog._id);
       return updatedBlog;
     } catch (error) {
@@ -63,6 +65,24 @@ console.log(blog)
     }
   };
 
+  const handleEdit = () => {
+    dispatch(
+      setEditMode({
+        blogId:blog?._id,
+        mode: true,
+        blog: {
+          title: blog?.title,
+          image: blog?.image,
+          content: blog?.content,
+          categoryId: blog?.categoryId._id,
+          isPublish: blog?.isPublish,
+        },
+       
+      })
+
+    );
+
+  };
   return (
     <div className="flex justify-between flex-nowrap items-center space-x-4 mt-2 mb-2">
       <div className="flex justify-between flex-nowrap items-center space-x-4 mx-2 gap-4">
@@ -74,13 +94,14 @@ console.log(blog)
             <BiLike
               onClick={handleLike}
               className={`scale-125 cursor-pointer ${
-                 userLiked ? "text-red-600" : ""}`}
+                userLiked ? "text-red-600" : ""
+              }`}
             />
             {likeCount}
           </span>
         </Tooltip>
         <span className="flex flex-nowrap items-center gap-2">
-          <GoCommentDiscussion className="scale-125 cursor-pointer" />
+          <GoCommentDiscussion onClick={()=>setComment(!comment)} className="scale-125 cursor-pointer" />
           {blog?.comments?.length}
         </span>
 
@@ -95,16 +116,28 @@ console.log(blog)
             <Link to={`/details/${blog._id}`}>Read More</Link>
           </Button>
         )}
-        {inBlog && blog?.userId?._id === currentUserId && 
-        <div>
-          <Button sx={{ marginRight: "5px" }} variant="outlined" size="small" color="info">
-        <Link to={"#"}>Edit Blog</Link>
-      </Button>
-          <Button sx={{ marginRight: "5px" }} variant="outlined" size="small" color="warning">
-        <Link to={"#"}>Delete Blog</Link>
-      </Button>
-        </div>
-        }
+        {inBlog && blog?.userId?._id === currentUserId && (
+          <div>
+            <Button
+              sx={{ marginRight: "5px" }}
+              variant="outlined"
+              size="small"
+              color="info"
+              onClick={handleEdit}
+            >
+              <Link to={"/addblog"}>Edit Blog</Link>
+            </Button>
+            <Button
+              sx={{ marginRight: "5px" }}
+              variant="outlined"
+              size="small"
+              color="warning"
+              onClick={()=>deleteBlog(blog?._id)}
+            >
+              <Link to={"/"}>Delete Blog</Link>
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

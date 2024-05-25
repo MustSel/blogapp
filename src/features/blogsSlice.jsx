@@ -4,9 +4,21 @@ const initialState = {
   blogs: [],
   blogDetails: [],
   users: [],
+  userDetails: [],
   liked: {},
   categories: [],
   pages: {},
+  editMode: {
+    blogId: "",
+    mode: false,
+    blog: {
+      title: "",
+      image: "",
+      content: "",
+      categoryId: "",
+      isPublish: false,
+    },
+  },
 
   loading: false,
   error: false,
@@ -23,12 +35,14 @@ const blogsSlice = createSlice({
     getBlogsSuccess: (state, { payload }) => {
       state.loading = false;
       state.blogs = payload.data;
-      state.pages = payload.details.pages
+      state.pages = payload.details.pages;
     },
-    // getPagesSuccess: (state, { payload }) => {
-    //   state.loading = false;
-    //   state.pages = payload;
-    // },
+    getSingleUserSuccess: (state, { payload }) => {
+      state.loading = false;
+      state.userDetails = payload.data;
+      
+    },
+   
     getBlogDetailsSuccess: (state, { payload }) => {
       state.loading = false;
       state.blogDetails = payload.data;
@@ -45,6 +59,9 @@ const blogsSlice = createSlice({
       state.loading = false;
       state.liked = payload;
     },
+    setEditMode: (state, { payload }) => {
+      state.editMode = payload;
+    },
   },
 });
 
@@ -55,7 +72,8 @@ export const {
   getUsersSuccess,
   likedSuccess,
   getBlogDetailsSuccess,
-  
+  setEditMode,
+  getSingleUserSuccess
 } = blogsSlice.actions;
 
 export default blogsSlice.reducer;

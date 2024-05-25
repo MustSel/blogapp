@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import useApiRequest from "../services/useApiRequest";
 import { Link } from "react-router-dom";
 import useBlogRequests from "../services/useBlogRequests";
+import { setEditMode } from "../features/blogsSlice";
 
 // Profile Dropdown
 const ProfileDropDown = (props) => {
@@ -87,7 +88,7 @@ export default () => {
     getCategories();
   }, []);
   const { categories } = useSelector((state) => state.blogs);
-  
+  const dispatch = useDispatch()
 
 
   const dropdownNavs = categories.map((item) => ({
@@ -121,11 +122,26 @@ export default () => {
   
   const { logout } = useApiRequest();
   const { getCategories } = useBlogRequests();
+  
+  const handleNewBlog = ()=> {
+    
+    dispatch(
+      setEditMode({
+        mode: false,
+        blog: {
+          title: "",
+          image: "",
+          content: "",
+          categoryId: "",
+          isPublish: false,
+        },
+      })
+    );
+  }
 
-  // Replace javascript:void(0) path with your path
   const navigation = [
     { title: "Categories", path: "#", isDrapdown: true, navs: dropdownNavs },
-    { title: "New Blog", path: "addblog" },
+    { title: "New Blog", path: "addblog", onClick:handleNewBlog },
     { title: "Guides", path: "#" },
     { title: "Partners", path: "#" },
   ];
@@ -203,6 +219,7 @@ export default () => {
                     ) : (
                       <Link
                         to={item.path}
+                        onClick={item.onClick}
                         className="block text-gray-700 hover:text-indigo-600"
                       >
                         {item.title}

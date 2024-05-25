@@ -6,6 +6,7 @@ import PrivateRouter from "./PrivateRouter";
 import Home from "../pages/Home";
 import BlogDetails from "../pages/BlogDetails";
 import AddBlog from "../pages/AddBlog";
+import ProfilBar from "../pages/ProfilBar";
 
 
 const AppRouter = () => {
@@ -17,6 +18,7 @@ const AppRouter = () => {
       <Route path="" element={<PrivateRouter />}>
         <Route path="details/:id" element={<BlogDetails />} />
         <Route path="addblog" element={<AddBlog />} />
+        <Route path="profil/:id" element={<ProfilBar />} />
       </Route>
     </Routes>
   );
