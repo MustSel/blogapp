@@ -35,6 +35,7 @@ const IconComp = ({ blog, users, inBlog, comment, setComment}) => {
   };
 
   const handleLike = async () => {
+
    if (currentUserId){
     await likesss(blog?._id);
     if (inBlog) {

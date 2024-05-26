@@ -100,6 +100,9 @@ export default () => {
   const [searchQuery, setSearchQuery] = useState("");
   const location = useLocation();
   const { axiosToken } = useAxios();
+
+
+
   const handleSearch = (e) => {
     e.preventDefault();
     const getSearchedBlogs = async (searchQuery) => {
@@ -108,16 +111,21 @@ export default () => {
         const res = await axiosToken(
           `/blogs/?search[title]=${searchQuery}`
         );
-        console.log(res);
+        console.log(res.data.data[0]);
         dispatch(getBlogsSuccess(res.data));
       } catch (error) {
         console.log(error);
       }
     };
-    getSearchedBlogs(searchQuery)
+    if(searchQuery.length>0){getSearchedBlogs(searchQuery)}
+    
     console.log("Search query:", searchQuery);
   };
 
+
+
+
+  
   const dropdownNavs = categories.map((item) => ({
     title: item.name,
     desc: "Duis aute irure dolor in reprehenderit",
