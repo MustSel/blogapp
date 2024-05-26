@@ -14,13 +14,19 @@ import { useSelector } from "react-redux";
 import EditProfileModal from "./EditProfilModal";
 
 import EditIcon from "@mui/icons-material/Edit";
+import useAxios from "../services/useAxios";
 
-const ProfileBar = ({ id, blogCounts }) => {
-  const { getUsers, handleComments } = useBlogRequests();
-  const { userDetails: user, userBlogs,userComments } = useSelector((state) => state.blogs);
+const ProfileBar = ({ id }) => {
+  const { getUsers } = useBlogRequests();
+  const {
+    userDetails: user,
+    userBlogs,
+    userComments,
+  } = useSelector((state) => state.blogs);
   const { currentUserId } = useSelector((state) => state.auth.user);
   const [openEditModal, setOpenEditModal] = useState(false);
-  
+  const [blogCounts, setBlogCounts] = useState(null);
+  const { axiosToken } = useAxios();
   const handleOpenEditModal = () => {
     setOpenEditModal(true);
   };
@@ -28,12 +34,21 @@ const ProfileBar = ({ id, blogCounts }) => {
   const handleCloseEditModal = () => {
     setOpenEditModal(false);
   };
-  
-  
+
+  const getUserAllBlogs = async (id) => {
+    try {
+      const { data } = await axiosToken("/blogs/?filter[userId]=" + id);
+      console.log(data);
+      setBlogCounts(data.data.length);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     getUsers(id);
-    
-  }, [id]);
+    getUserAllBlogs(id);
+  }, [id, userBlogs]);
 
   return (
     <>
@@ -105,7 +120,7 @@ const ProfileBar = ({ id, blogCounts }) => {
                   </Typography>
                 </Grid>
               </Grid>
-              {currentUserId && (
+              {currentUserId===id && (
                 <IconButton
                   onClick={handleOpenEditModal}
                   sx={{ position: "absolute", top: 16, right: 16 }}

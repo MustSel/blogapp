@@ -8,21 +8,19 @@ import { useSelector } from "react-redux";
 
 const Profile = () => {
   const { id } = useParams();
-  const [blogCounts, setBlogCounts] = useState(null)
-  const { handleComments } = useBlogRequests();
-  const { userComments } = useSelector((state) => state.blogs);
-
-  console.log(userComments)
-  useEffect(() => {
-    handleComments(false,false,id)
-  }, [id])
   
+  const { handleComments } = useBlogRequests();
+
+  useEffect(() => {
+    handleComments(false, false, id);
+  }, [id]);
+
   return (
     <>
       <Box marginTop={4}>
-        <ProfileBar id={id} blogCounts={blogCounts} />
+        <ProfileBar id={id}  />
       </Box>
-      <Home inBlog={true} id={id} setBlogCounts={setBlogCounts} />
+      <Home inBlog={true} id={id}  />
     </>
   );
 };

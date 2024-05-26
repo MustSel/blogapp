@@ -9,10 +9,10 @@ import Card from "../components/Card";
 import { Button, Pagination, Stack } from "@mui/material";
 import ScrollToTop from "../components/ScrollToTop";
 
-function Home({ inBlog, id, setBlogCounts }) {
-  const { user } = useSelector((state) => state.auth);
+function Home({ inBlog, id }) {
+  const { currentUserId } = useSelector((state) => state.auth.user);
   const { getBlogs, getUsers, getUserBlogs } = useBlogRequests();
-  const { blogs, users, pages, userBlogs} = useSelector(
+  const { blogs, users, pages, userBlogs } = useSelector(
     (state) => state.blogs
   );
   const [currentPage, setCurrentPage] = useState(pages?.current || 1);
@@ -21,15 +21,12 @@ function Home({ inBlog, id, setBlogCounts }) {
 
   useEffect(() => {
     if (inBlog) {
-      getUserBlogs(id, currentPage, isPublish).then(() =>
-        setBlogCounts(userBlogs?.published?.length)
-      );
+      getUserBlogs(id, currentPage, isPublish);
     } else {
       getBlogs(currentPage);
       getUsers();
-      
     }
-  }, [currentPage, liked, id,isPublish]);
+  }, [currentPage, liked, id, isPublish]);
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
@@ -53,16 +50,24 @@ function Home({ inBlog, id, setBlogCounts }) {
                 >
                   <Button
                     variant={isPublish ? "contained" : "outlined"}
-                    onClick={() => setIsPublish(true)}
+                    onClick={() => {
+                      setIsPublish(true);
+                      setCurrentPage(1);
+                    }}
                   >
                     Published Blogs
                   </Button>
-                  <Button
-                    variant={isPublish ? "outlined" : "contained"}
-                    onClick={() => setIsPublish(false)}
-                  >
-                    Draft Blogs
-                  </Button>
+                  {currentUserId === id && (
+                    <Button
+                      variant={isPublish ? "outlined" : "contained"}
+                      onClick={() => {
+                        setIsPublish(false);
+                        setCurrentPage(1);
+                      }}
+                    >
+                      Draft Blogs
+                    </Button>
+                  )}
                 </Box>
               ) : (
                 <div>
@@ -109,13 +114,13 @@ function Home({ inBlog, id, setBlogCounts }) {
 export default Home;
 
 //? update user fonk
-//? blog comments length + draft sayısı ekle
+
 //? categories search fonksi
 //?about
 //?404
 //?profile page buton to profil
-//? login- register currentusera gösterme
+
 //? delete blog warning
-//? navbar username
+
 //?search buton
 //?categories için home kopyala

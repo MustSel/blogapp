@@ -53,8 +53,10 @@ const useApiRequest = () => {
     try {
      
       await axiosToken.get("/auth/logout")
+      toastSuccessNotify("Logout başarılı")
       dispatch(logoutSuccess())
     } catch (error) {
+      toastErrorNotify("Logout başarısız oldu")
       dispatch(fetchFail())
     }
   }

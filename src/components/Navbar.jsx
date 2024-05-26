@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useApiRequest from "../services/useApiRequest";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import useBlogRequests from "../services/useBlogRequests";
-import { setEditMode } from "../features/blogsSlice";
+import { fetchStart, getBlogsSuccess, setEditMode } from "../features/blogsSlice";
+import useAxios from "../services/useAxios";
 
 // Profile Dropdown
 const ProfileDropDown = (props) => {
@@ -11,16 +12,22 @@ const ProfileDropDown = (props) => {
     "https://icons.veryicon.com/png/o/miscellaneous/standard/avatar-15.png";
   const [state, setState] = useState(false);
   const profileRef = useRef();
-  const {currentUserId} = useSelector((state) => state.auth.user);
+  const { user } = useSelector((state) => state.auth);
+
   const handleLogout = async () => {
-   await props.logout();
-    setState(false);
-     window.location.reload()
+    try {
+      await props.logout();
+      setState(false);
+
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Logout işlemi başarısız:", error);
+    }
   };
 
   const navigation = [
-    { title: "Profil & Settings", path: `/profil/${currentUserId}` },
-    { title: "Log out",  path: "#", onClick: handleLogout },
+    { title: "Profil & Settings", path: `/profil/${user?.currentUserId}` },
+    { title: "Log out", path: "#", onClick: handleLogout },
   ];
 
   useEffect(() => {
@@ -50,7 +57,9 @@ const ProfileDropDown = (props) => {
         </button>
         <div className="lg:hidden">
           <span className="block">{props.user.username}</span>
-          <span className="block text-sm text-gray-500">{props.user.email}</span>
+          <span className="block text-sm text-gray-500">
+            {props.user.email}
+          </span>
         </div>
       </div>
       <ul
@@ -87,8 +96,27 @@ export default () => {
     getCategories();
   }, []);
   const { categories } = useSelector((state) => state.blogs);
-  const dispatch = useDispatch()
-
+  const dispatch = useDispatch();
+  const [searchQuery, setSearchQuery] = useState("");
+  const location = useLocation();
+  const { axiosToken } = useAxios();
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const getSearchedBlogs = async (searchQuery) => {
+      dispatch(fetchStart());
+      try {
+        const res = await axiosToken(
+          `/blogs/?search[title]=${searchQuery}`
+        );
+        console.log(res);
+        dispatch(getBlogsSuccess(res.data));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getSearchedBlogs(searchQuery)
+    console.log("Search query:", searchQuery);
+  };
 
   const dropdownNavs = categories.map((item) => ({
     title: item.name,
@@ -118,12 +146,10 @@ export default () => {
   });
   const [menuState, setMenuState] = useState(false);
   const { user } = useSelector((state) => state.auth);
-  
   const { logout } = useApiRequest();
   const { getCategories } = useBlogRequests();
-  
-  const handleNewBlog = ()=> {
-    
+
+  const handleNewBlog = () => {
     dispatch(
       setEditMode({
         mode: false,
@@ -136,13 +162,12 @@ export default () => {
         },
       })
     );
-  }
+  };
 
   const navigation = [
     { title: "Categories", path: "#", isDrapdown: true, navs: dropdownNavs },
-    { title: "New Blog", path: "addblog", onClick:handleNewBlog },
+    { title: "New Blog", path: "addblog", onClick: handleNewBlog },
     { title: "About", path: "#" },
-    
   ];
 
   useEffect(() => {
@@ -178,7 +203,7 @@ export default () => {
                   <li key={idx}>
                     {item.isDrapdown ? (
                       <button
-                        className="w-full flex items-center  gap-1 text-gray-700 hover:text-indigo-600"
+                        className="w-full flex items-center gap-1 text-gray-700 hover:text-indigo-600"
                         onClick={() =>
                           setDrapdownState({
                             idx,
@@ -233,14 +258,13 @@ export default () => {
                             <li key={idx}>
                               <Link
                                 to={dropdownItem.path}
-                                onClick={() =>(setDrapdownState({
+                                onClick={() => (
+                                  setDrapdownState({
                                     idx,
                                     isActive: !drapdownState.isActive,
                                   }),
-                                  setMenuState(false))
-                                  
-                                  
-                                }
+                                  setMenuState(false)
+                                )}
                                 className="flex gap-3 items-center"
                               >
                                 <div className="w-12 h-12 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center duration-150 group-hover:bg-indigo-600 group-hover:text-white md:w-14 md:h-14">
@@ -273,17 +297,17 @@ export default () => {
                 user={user}
               />
             ) : (
-              <div className="mt-5 pt-5  lg:hidden">
+              <div className="mt-5 pt-5 lg:hidden">
                 <Link
                   to="login"
-                  onClick={()=>setMenuState(false)}
+                  onClick={() => setMenuState(false)}
                   className="block py-3 text-center text-gray-700 hover:text-indigo-600 border rounded-lg "
                 >
                   Log in
                 </Link>
                 <Link
                   to="register"
-                  onClick={()=>setMenuState(false)}
+                  onClick={() => setMenuState(false)}
                   className="block py-3 px-4 font-medium text-center text-white bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 active:shadow-none mt-2 rounded-lg shadow "
                 >
                   Sign up
@@ -291,36 +315,65 @@ export default () => {
               </div>
             )}
           </div>
-          
+
           <div className="flex-1 flex items-center justify-between space-x-2 sm:space-x-6">
-          <div className="flex-1 mx-auto flex justify-center ">
-          <form className="flex items-center space-x-2 border rounded-md p-2 w-1/2 lg:w-full">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 flex-none text-gray-300"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          {location.pathname === '/' && (
+            <div className="flex-1 mx-auto flex justify-center ">
+              <form onSubmit={handleSearch} className="flex items-center space-x-2 border rounded-md p-2 w-1/2 lg:w-full">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 flex-none text-gray-300"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full outline-none appearance-none placeholder-gray-500 text-gray-500 sm:w-auto"
                 />
-              </svg>
-              <input
-                className="w-full outline-none appearance-none placeholder-gray-500 text-gray-500 sm:w-auto"
-                type="text"
-                placeholder="Search"
-              />
-            </form>
-          </div>
-          <div >
+                <button
+                    type="submit"
+                    className="text-indigo-600 hover:text-indigo-400"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className="w-5 h-5"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M9 3a6 6 0 100 12A6 6 0 009 3zm3.707 10.293a1 1 0 00-1.414-1.414L9 12.172l-2.293-2.293a1 1 0 00-1.414 1.414L7.586 13.586l-2.293 2.293a1 1 0 001.414 1.414L9 15.828l2.293 2.293a1 1 0 001.414-1.414L10.414 13.586l2.293-2.293z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+              </form>
+            </div>)}
+            {user?.username && (
+              <span className="hidden whitespace-nowrap lg:block text-gray-700">
+                <span className="text-xs font-thin">Logged in,</span>
+                <span className="text-lg font-bold"> {user.username}</span>
+              </span>
+            )}
             {user.username ? (
-              <ProfileDropDown class="hidden lg:block" logout={logout} user={user} />
+              <ProfileDropDown
+                class="hidden lg:block"
+                logout={logout}
+                user={user}
+              />
             ) : (
-              <div className="hidden lg:flex lg:gap-2 ">
+              <div className="hidden lg:flex items-center space-x-2">
                 <Link
                   to="login"
                   className="whitespace-nowrap block py-3 text-center text-gray-700 hover:text-indigo-600 border rounded-lg md:border-none flex-col items-center"
@@ -373,8 +426,6 @@ export default () => {
                 </svg>
               )}
             </button>
-          </div>
-            
           </div>
         </div>
       </div>
