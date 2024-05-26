@@ -124,3 +124,7 @@ export default Home;
 
 //?search buton
 //?categories için home kopyala
+
+
+//?arandıktan sonra beyen yapınca sayfa yenileniyor home atıyor
+//?detail içinde yoruma basınca  yorumların oldugu yere gelsin
