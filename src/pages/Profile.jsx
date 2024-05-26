@@ -1,24 +1,28 @@
-import React, { useEffect } from "react";
+import { Box } from "@mui/material";
 import ProfileBar from "../components/ProfilBar";
 import Home from "./Home";
-import { useSelector } from "react-redux";
-import useBlogRequests from "../services/useBlogRequests";
 import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import useBlogRequests from "../services/useBlogRequests";
+import { useSelector } from "react-redux";
 
 const Profile = () => {
-    const { id } = useParams();
-    const {allBlogs} = useSelector(state=>state.blogs)
-    const {getAllBlogs} = useBlogRequests()
+  const { id } = useParams();
+  const [blogCounts, setBlogCounts] = useState(null)
+  const { handleComments } = useBlogRequests();
+  const { userComments } = useSelector((state) => state.blogs);
 
-    // useEffect(() => {
-    //     getAllBlogs()
-    // }, [])
-    console.log(allBlogs)
-
+  console.log(userComments)
+  useEffect(() => {
+    handleComments(false,false,id)
+  }, [id])
+  
   return (
     <>
-      <ProfileBar id={id} />
-      <Home inBlog = {true} id={id} />
+      <Box marginTop={4}>
+        <ProfileBar id={id} blogCounts={blogCounts} />
+      </Box>
+      <Home inBlog={true} id={id} setBlogCounts={setBlogCounts} />
     </>
   );
 };

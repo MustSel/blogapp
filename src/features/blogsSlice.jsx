@@ -3,15 +3,17 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   blogs: [],
   userBlogs: {
-    published:[],
-    drafted:[]
+    published: [],
+    drafted: [],
   },
   blogDetails: [],
   users: [],
-  userDetails: [],
+  userDetails: {},
+  userComments: [],
   liked: {},
   categories: [],
   pages: {},
+  
   editMode: {
     blogId: "",
     mode: false,
@@ -41,18 +43,22 @@ const blogsSlice = createSlice({
       state.blogs = payload.data;
       state.pages = payload.details.pages;
     },
-    getUserBlogsSuccess: (state, { payload:{data,res} }) => {
+    getUserBlogsSuccess: (state, { payload: { data, isPublish } }) => {
       state.loading = false;
-      state.userBlogs.drafted = data.data;
-      state.userBlogs.published = res.data.data;
-      console.log(data, res)
+      isPublish
+        ? (state.userBlogs.published = data.data)
+        : (state.userBlogs.drafted = data.data);
+      state.pages = data.details.pages;
     },
     getSingleUserSuccess: (state, { payload }) => {
       state.loading = false;
       state.userDetails = payload.data;
-      
     },
-   
+    getUserCommentsSuccess: (state, { payload }) => {
+      state.loading = false;
+      state.userComments = payload.data;
+    },
+
     getBlogDetailsSuccess: (state, { payload }) => {
       state.loading = false;
       state.blogDetails = payload.data;
@@ -72,9 +78,9 @@ const blogsSlice = createSlice({
     setEditMode: (state, { payload }) => {
       state.editMode = payload;
     },
-    setShowComments : (state) => {
-      state.showComments = !state.showComments
-    }
+    setShowComments: (state) => {
+      state.showComments = !state.showComments;
+    },
   },
 });
 
@@ -88,7 +94,8 @@ export const {
   setEditMode,
   getSingleUserSuccess,
   setShowComments,
-  getUserBlogsSuccess
+  getUserCommentsSuccess,
+  getUserBlogsSuccess,
 } = blogsSlice.actions;
 
 export default blogsSlice.reducer;

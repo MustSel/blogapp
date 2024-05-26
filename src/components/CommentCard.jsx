@@ -9,11 +9,12 @@ import {
 } from "@mui/material";
 import avatar from "../assets/avatar.png";
 import { useSelector } from "react-redux";
+import DOMPurify from "dompurify";
 
 const CommentCard = ({ users, comment, __v, createdAt, updatedAt, _id,  userId, onEdit, handleComments, onCommentChange }) => {
   const { currentUserId } = useSelector((state) => state.auth.user);
   const author = users.find((user) => user._id === userId?._id) || {};
-
+  const cleanHTML = DOMPurify.sanitize(comment);
   const handleDelete = async () => {
     await handleComments(_id)
     onCommentChange()
@@ -45,7 +46,7 @@ const CommentCard = ({ users, comment, __v, createdAt, updatedAt, _id,  userId, 
           </Box>
         </Box>
         <Typography variant="p" component="h1" gutterBottom>
-          {comment}
+        <div dangerouslySetInnerHTML={{ __html: cleanHTML }} />
         </Typography>
       </CardContent>
       {userId?._id == currentUserId && (

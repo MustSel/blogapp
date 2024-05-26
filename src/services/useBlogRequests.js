@@ -10,6 +10,7 @@ import {
   getCategoriesSuccess,
   getSingleUserSuccess,
   getUserBlogsSuccess,
+  getUserCommentsSuccess,
   getUsersSuccess,
   likedSuccess,
 } from "../features/blogsSlice";
@@ -32,17 +33,18 @@ const useBlogRequests = () => {
     }
   };
 
-  const getUserBlogs = async (id) => {
+  const getUserBlogs = async (id,page,isPublish) => {
     dispatch(fetchStart());
     try {
-      const { data } = await axiosPublic(
-        "/blogs/?filter[isPublish]=false&filter[userId]=" + id
+      const {data} = await axiosToken(
+        "/blogs/?filter[isPublish]="+isPublish+"&sort[createdAt]=desc&limit=3&page=" + page + "&filter[userId]=" + id
       );
-      const res = await axiosPublic(
-        "/blogs/?filter[isPublish]=true&filter[userId]=" + id
-      );
-      console.log(data);
-      dispatch(getUserBlogsSuccess({ data, res }));
+      
+      dispatch(getUserBlogsSuccess({data, isPublish}));
+      // const res = await axiosToken(
+      //   "/blogs/?filter[isPublish]=true&sort[createdAt]=desc&limit=2&page=" + page + "&filter[userId]=" + id
+      // );
+      
     } catch (error) {
       console.log(error);
     }
@@ -127,7 +129,7 @@ const useBlogRequests = () => {
       toastErrorNotify("Blog Silinemedi");
     }
   };
-  const handleComments = async (id, commentData) => {
+  const handleComments = async (id, commentData, userId) => {
     dispatch(fetchStart());
     try {
       if (id && commentData) {
@@ -142,9 +144,11 @@ const useBlogRequests = () => {
         const res = await axiosToken.post("/comments/", commentData);
         toastSuccessNotify("Yorum Başarıyla Eklendi");
         console.log(res);
-      } else if(!id && !commentData)  {
-        const res = await axiosToken("/comments/?filter[userId]=65343222b67e9681f937f001")
-        console.log(res)
+      } else if(!id && !commentData && userId)  {
+        const {data} = await axiosToken("/comments/?filter[userId]="+userId)
+        console.log(data)
+        dispatch(getUserCommentsSuccess(data))
+        
       }
     } catch (error) {
       toastErrorNotify("Yorum ekleme başarısız oldu");

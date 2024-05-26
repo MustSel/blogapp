@@ -9,21 +9,18 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import useBlogRequests from "../services/useBlogRequests";
-import { useParams } from "react-router-dom";
+
 import { useSelector } from "react-redux";
 import EditProfileModal from "./EditProfilModal";
-import BlogCard from "./BlogCard";
+
 import EditIcon from "@mui/icons-material/Edit";
 
-const ProfileBar = ({id}) => {
-  
-  const { getUsers } = useBlogRequests();
-  const { userDetails: user } = useSelector((state) => state.blogs);
-  const { blogs } = user || {};
-  const isCurrentUser = true; // Bu değişkenin gerçek değeri redux veya başka bir state'den alınabilir
-
+const ProfileBar = ({ id, blogCounts }) => {
+  const { getUsers, handleComments } = useBlogRequests();
+  const { userDetails: user, userBlogs,userComments } = useSelector((state) => state.blogs);
+  const { currentUserId } = useSelector((state) => state.auth.user);
   const [openEditModal, setOpenEditModal] = useState(false);
-
+  
   const handleOpenEditModal = () => {
     setOpenEditModal(true);
   };
@@ -31,14 +28,16 @@ const ProfileBar = ({id}) => {
   const handleCloseEditModal = () => {
     setOpenEditModal(false);
   };
-console.log(user)
+  
+  
   useEffect(() => {
     getUsers(id);
+    
   }, [id]);
 
   return (
     <>
-      <Box mt={4} width="80%" margin="auto">
+      <Box mt={2} width="70%" margin="auto">
         <Grid container spacing={2} justifyContent="center">
           <Grid item xs={12}>
             <Paper elevation={3} sx={{ p: 3, position: "relative" }}>
@@ -99,14 +98,14 @@ console.log(user)
                 <Grid item xs={12} md={3}>
                   <Typography variant="h6">Statistics</Typography>
                   <Typography variant="body1">
-                    Number of Blogs: {user?.blogs?.length}
+                    Number of Blogs: {blogCounts}
                   </Typography>
                   <Typography variant="body1">
-                    Number of Comments: {user?.comments?.length}
+                    Number of Comments: {userComments?.length}
                   </Typography>
                 </Grid>
               </Grid>
-              {isCurrentUser && (
+              {currentUserId && (
                 <IconButton
                   onClick={handleOpenEditModal}
                   sx={{ position: "absolute", top: 16, right: 16 }}

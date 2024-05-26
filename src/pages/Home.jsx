@@ -6,26 +6,30 @@ import { useSelector } from "react-redux";
 
 import useBlogRequests from "../services/useBlogRequests";
 import Card from "../components/Card";
-import { Pagination, Stack } from "@mui/material";
+import { Button, Pagination, Stack } from "@mui/material";
 import ScrollToTop from "../components/ScrollToTop";
 
-function Home({ inBlog, id }) {
+function Home({ inBlog, id, setBlogCounts }) {
   const { user } = useSelector((state) => state.auth);
   const { getBlogs, getUsers, getUserBlogs } = useBlogRequests();
-  const { blogs, users, pages, userBlogs } = useSelector((state) => state.blogs);
+  const { blogs, users, pages, userBlogs} = useSelector(
+    (state) => state.blogs
+  );
   const [currentPage, setCurrentPage] = useState(pages?.current || 1);
   const { liked } = useSelector((state) => state.blogs);
-const [drafted,setDrafted] = useState(true)
-  console.log(userBlogs);
-  console.log(inBlog);
+  const [isPublish, setIsPublish] = useState(true);
+
   useEffect(() => {
     if (inBlog) {
-      getUserBlogs(id);
+      getUserBlogs(id, currentPage, isPublish).then(() =>
+        setBlogCounts(userBlogs?.published?.length)
+      );
     } else {
       getBlogs(currentPage);
       getUsers();
+      
     }
-  }, [currentPage, liked, id]);
+  }, [currentPage, liked, id,isPublish]);
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
@@ -38,13 +42,44 @@ const [drafted,setDrafted] = useState(true)
         <Box sx={{ p: 3 }}>
           <section className="mt-12 mx-auto px-4 max-w-screen-xl md:px-8">
             <div className="text-center">
-              <h1 className="text-3xl text-gray-800 font-semibold">Blog</h1>
-              <p className="mt-3 text-gray-500">
-                Blogs that are loved by the community. Updated every hour.
-              </p>
+              {inBlog ? (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: 2,
+                    mb: 2,
+                  }}
+                >
+                  <Button
+                    variant={isPublish ? "contained" : "outlined"}
+                    onClick={() => setIsPublish(true)}
+                  >
+                    Published Blogs
+                  </Button>
+                  <Button
+                    variant={isPublish ? "outlined" : "contained"}
+                    onClick={() => setIsPublish(false)}
+                  >
+                    Draft Blogs
+                  </Button>
+                </Box>
+              ) : (
+                <div>
+                  <h1 className="text-3xl text-gray-800 font-semibold">Blog</h1>
+                  <p className="mt-3 text-gray-500">
+                    Blogs that are loved by the community. Updated every hour.
+                  </p>
+                </div>
+              )}
             </div>
             <div className="mt-12 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-              {(inBlog ? (drafted?userBlogs.drafted :userBlogs.published)  : blogs)?.map((blog, idx) => (
+              {(inBlog
+                ? isPublish
+                  ? userBlogs.published
+                  : userBlogs.drafted
+                : blogs
+              )?.map((blog, idx) => (
                 <Card
                   key={idx}
                   blog={blog}
@@ -73,8 +108,6 @@ const [drafted,setDrafted] = useState(true)
 
 export default Home;
 
-//? blog button in profil
-//? profil edit user buton
 //? update user fonk
 //? blog comments length + draft sayısı ekle
 //? categories search fonksi
@@ -86,4 +119,3 @@ export default Home;
 //? navbar username
 //?search buton
 //?categories için home kopyala
-
