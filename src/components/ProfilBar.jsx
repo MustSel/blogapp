@@ -27,6 +27,7 @@ const ProfileBar = ({ id }) => {
   const [openEditModal, setOpenEditModal] = useState(false);
   const [blogCounts, setBlogCounts] = useState(null);
   const { axiosToken } = useAxios();
+  const [onUpdate, setOnUpdate] = useState(false)
   const handleOpenEditModal = () => {
     setOpenEditModal(true);
   };
@@ -38,7 +39,7 @@ const ProfileBar = ({ id }) => {
   const getUserAllBlogs = async (id) => {
     try {
       const { data } = await axiosToken("/blogs/?filter[userId]=" + id);
-      console.log(data);
+      
       setBlogCounts(data.data.length);
     } catch (error) {
       console.log(error);
@@ -48,7 +49,7 @@ const ProfileBar = ({ id }) => {
   useEffect(() => {
     getUsers(id);
     getUserAllBlogs(id);
-  }, [id, userBlogs]);
+  }, [id, userBlogs,onUpdate]);
 
   return (
     <>
@@ -136,6 +137,8 @@ const ProfileBar = ({ id }) => {
         open={openEditModal}
         onClose={handleCloseEditModal}
         user={user}
+        setOnUpdate={setOnUpdate}
+        onUpdate={onUpdate}
       />
     </>
   );

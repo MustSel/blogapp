@@ -1,11 +1,16 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useApiRequest from "../services/useApiRequest";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import useBlogRequests from "../services/useBlogRequests";
-import { fetchStart, getBlogsSuccess, setEditMode } from "../features/blogsSlice";
+import {
+  fetchStart,
+  getBlogsSuccess,
+  setEditMode,
+} from "../features/blogsSlice";
 import useAxios from "../services/useAxios";
-
+import logo from "../assets/logo.png"
+import { Tooltip } from "@mui/material";
 // Profile Dropdown
 const ProfileDropDown = (props) => {
   const defaultProfilImage =
@@ -65,7 +70,7 @@ const ProfileDropDown = (props) => {
       <ul
         className={`bg-white top-12 right-0 mt-5 space-y-5 lg:absolute lg:border lg:rounded-md lg:text-sm lg:w-52 lg:shadow-md lg:space-y-0 lg:mt-0 ${
           state ? "block" : "hidden"
-        } lg:z-50 z-50`} // z-index ekledik
+        } lg:z-50 z-50`} 
       >
         {navigation.map((item, idx) => (
           <li key={idx}>
@@ -98,8 +103,9 @@ export default () => {
   const { categories } = useSelector((state) => state.blogs);
   const dispatch = useDispatch();
   const [searchQuery, setSearchQuery] = useState("");
-  const location = useLocation();
+  const navigate = useNavigate()
   const { axiosToken } = useAxios();
+  
 
 
 
@@ -108,45 +114,157 @@ export default () => {
     const getSearchedBlogs = async (searchQuery) => {
       dispatch(fetchStart());
       try {
-        const res = await axiosToken(
-          `/blogs/?search[title]=${searchQuery}`
-        );
-        console.log(res.data.data[0]);
+        const res = await axiosToken(`/blogs/?search[title]=${searchQuery}`);
+        
         dispatch(getBlogsSuccess(res.data));
+        navigate("searchresults")
       } catch (error) {
         console.log(error);
       }
     };
-    if(searchQuery.length>0){getSearchedBlogs(searchQuery)}
+    if (searchQuery.length > 0) {
+      getSearchedBlogs(searchQuery);
+    }
+
     
-    console.log("Search query:", searchQuery);
   };
 
-
-
-
+  const categoryData = [
+    {
+      name: 'World',
+      desc: 'Global news and events happening around the world.',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 3.75v16.5m0-16.5L9.75 6.75m0 0L12 9m-2.25-2.25L12 6.75m0-3l2.25 3m0 0L12 9m0 9V12m3 0v9m0 0L12 12m3 9H9m0 0V9" />
+        </svg>
+      ),
+    },
+    {
+      name: 'Technology',
+      desc: 'Latest advancements and news in technology.',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 6.75h-15m15 0v15h-15v-15m15 0L12 2.25M4.5 6.75L12 2.25m0 0v18" />
+        </svg>
+      ),
+    },
+    {
+      name: 'Design',
+      desc: 'Innovative design trends and insights.',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M21 6.75H3m18 0v10.5H3V6.75m18 0L12 2.25M3 6.75L12 2.25m0 0v19.5" />
+        </svg>
+      ),
+    },
+    {
+      name: 'Culture',
+      desc: 'Exploring diverse cultures and traditions.',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 2.25c5.385 0 9.75 4.365 9.75 9.75s-4.365 9.75-9.75 9.75-9.75-4.365-9.75-9.75 4.365-9.75 9.75-9.75zm0 0v10.5m0 0L6.75 7.5" />
+        </svg>
+      ),
+    },
+    {
+      name: 'Business',
+      desc: 'Updates and analysis on global business.',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3 12h18M12 3l9 9-9 9" />
+        </svg>
+      ),
+    },
+    {
+      name: 'Politics',
+      desc: 'Current political events and analysis.',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12h19.5M12 2.25L3 12m9-9l9 9" />
+        </svg>
+      ),
+    },
+    {
+      name: 'Science',
+      desc: 'Discoveries and research in the scientific world.',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 21.75H2.25m19.5-19.5H2.25m19.5 19.5V2.25m-19.5 19.5V2.25" />
+        </svg>
+      ),
+    },
+    {
+      name: 'Health',
+      desc: 'Health tips and news to stay well.',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 2.25c5.385 0 9.75 4.365 9.75 9.75s-4.365 9.75-9.75 9.75-9.75-4.365-9.75-9.75 4.365-9.75 9.75-9.75zM12 9v6" />
+        </svg>
+      ),
+    },
+    {
+      name: 'Style',
+      desc: 'Latest fashion trends and style tips.',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M4.75 4.75L19.25 19.25M4.75 19.25L19.25 4.75" />
+        </svg>
+      ),
+    },
+    {
+      name: 'Travel',
+      desc: 'Travel guides and destination tips.',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 2.25c5.385 0 9.75 4.365 9.75 9.75s-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12 6.615 2.25 12 2.25zM12 9v6" />
+        </svg>
+      ),
+    },
+    {
+      name: 'Sport',
+      desc: 'Updates and news on sports events.',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 6.75l10.5 10.5M17.25 6.75L6.75 17.25" />
+        </svg>
+      ),
+    },
+    {
+      name: 'Food',
+      desc: 'Delicious recipes and culinary news.',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12h10.5M12 6.75v10.5" />
+        </svg>
+      ),
+    },
+  ];
   
-  const dropdownNavs = categories.map((item) => ({
-    title: item.name,
-    desc: "Duis aute irure dolor in reprehenderit",
-    path: `/${item}`,
-    icon: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={1.5}
-        stroke="currentColor"
+  const dropdownNavs = categories.map((item) => {
+    const category = categoryData.find((cat) => cat.name === item.name);
+    return {
+      title: item.name,
+      id: item._id,
+      desc: category?.desc || "Default description",
+      path: `categories/${item._id}`,
+      icon: category?.icon || (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="currentColor"
         className="w-6 h-6"
       >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
-          d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"
+          d="M12 3.75v16.5M3.75 12h16.5"
         />
       </svg>
     ),
-  }));
+  }})
+  
 
   const [drapdownState, setDrapdownState] = useState({
     isActive: false,
@@ -175,7 +293,7 @@ export default () => {
   const navigation = [
     { title: "Categories", path: "#", isDrapdown: true, navs: dropdownNavs },
     { title: "New Blog", path: "addblog", onClick: handleNewBlog },
-    { title: "About", path: "#" },
+    { title: "About", path: "about" },
   ];
 
   useEffect(() => {
@@ -190,14 +308,14 @@ export default () => {
     <nav className="bg-white border-b">
       <div className="flex items-center space-x-8 py-3 px-4 max-w-screen-xl mx-auto md:px-8">
         <div className="flex-none lg:flex-initial">
-          <Link to="/">
+          <a href="/">
             <img
-              src="https://www.floatui.com/logo.svg"
+              src={logo}
               width={120}
               height={50}
-              alt="Float UI logo"
+              alt="Your Blogs"
             />
-          </Link>
+          </a>
         </div>
         <div className="nav-menu flex-1 flex items-center justify-between">
           <div
@@ -325,51 +443,44 @@ export default () => {
           </div>
 
           <div className="flex-1 flex items-center justify-between space-x-2 sm:space-x-6">
-          {location.pathname === '/' && (
-            <div className="flex-1 mx-auto flex justify-center ">
-              <form onSubmit={handleSearch} className="flex items-center space-x-2 border rounded-md p-2 w-1/2 lg:w-full">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 flex-none text-gray-300"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+            
+              <div className="flex-1 mx-auto flex justify-center ">
+                <form
+                  onSubmit={handleSearch}
+                  className="flex items-center space-x-2 border rounded-md p-2 w-2/3 lg:w-full"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full outline-none appearance-none placeholder-gray-500 text-gray-500 sm:w-auto"
-                />
-                <button
-                    type="submit"
-                    className="text-indigo-600 hover:text-indigo-400"
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 flex-none text-gray-300"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      className="w-5 h-5"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M9 3a6 6 0 100 12A6 6 0 009 3zm3.707 10.293a1 1 0 00-1.414-1.414L9 12.172l-2.293-2.293a1 1 0 00-1.414 1.414L7.586 13.586l-2.293 2.293a1 1 0 001.414 1.414L9 15.828l2.293 2.293a1 1 0 001.414-1.414L10.414 13.586l2.293-2.293z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </button>
-              </form>
-            </div>)}
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                  <Tooltip
+                   title={"Sadece başlıklar içinde arama yapabilirsiniz. Backend'ten dolayı case sensitive'dir."}
+                   arrow>
+                    <input
+                    type="text"
+                    placeholder="Search..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full outline-none appearance-none placeholder-gray-500 text-gray-500 sm:w-auto"
+                  />
+                  </Tooltip>
+                  
+                  
+                </form>
+              </div>
+            
             {user?.username && (
-              <span className="hidden whitespace-nowrap lg:block text-gray-700">
+              <span className="hidden whitespace-nowrap md:block text-gray-700">
                 <span className="text-xs font-thin">Logged in,</span>
                 <span className="text-lg font-bold"> {user.username}</span>
               </span>

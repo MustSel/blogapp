@@ -20,7 +20,7 @@ const Profile = () => {
       <Box marginTop={4}>
         <ProfileBar id={id}  />
       </Box>
-      <Home inBlog={true} id={id}  />
+      <Home inProfile={true} id={id}  />
     </>
   );
 };

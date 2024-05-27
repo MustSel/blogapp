@@ -42,7 +42,7 @@ const Comments = ({ id, comments, users, onCommentChange }) => {
 
   return (
     <>
-      <Box mt={16} mb={4}>
+      <Box  mt={8} mb={4}>
         <hr ref={hrRef} />
       </Box>
 
@@ -57,86 +57,86 @@ const Comments = ({ id, comments, users, onCommentChange }) => {
           >
             Comments
           </Typography>
-          <Box sx={{ width: "100%", maxWidth: 800 }}>
-            <ReactQuill
-              value={commentText}
-              onChange={handleChange}
-              style={{ height: "200px" }}
-              modules={{
-                toolbar: [
-                  [{ header: "1" }, { header: "2" }, { font: [] }],
-                  [{ size: [] }],
-                  ["bold", "italic", "underline", "strike", "blockquote"],
-                  [
-                    { list: "ordered" },
-                    { list: "bullet" },
-                    { indent: "-1" },
-                    { indent: "+1" },
+          <Box mt={6} display="flex" flexWrap="wrap" justifyContent="center">
+            {comments?.map((comment) => (
+              <CommentCard
+                key={comment?._id}
+                handleComments={handleComments}
+                {...comment}
+                users={users}
+                onEdit={handleEdit}
+                onCommentChange={onCommentChange}
+              />
+            ))}
+            <Box sx={{ width: "100%", maxWidth: 800 }}>
+              <ReactQuill
+                value={commentText}
+                onChange={handleChange}
+                style={{ height: "200px" }}
+                modules={{
+                  toolbar: [
+                    [{ header: "1" }, { header: "2" }, { font: [] }],
+                    [{ size: [] }],
+                    ["bold", "italic", "underline", "strike", "blockquote"],
+                    [
+                      { list: "ordered" },
+                      { list: "bullet" },
+                      { indent: "-1" },
+                      { indent: "+1" },
+                    ],
+                    [{ color: [] }, { background: [] }],
+                    [{ align: [] }],
+                    ["link"],
+                    ["clean"],
                   ],
-                  [{ color: [] }, { background: [] }],
-                  [{ align: [] }],
-                  ["link"],
-                  ["clean"],
-                ],
-              }}
-              formats={[
-                "header",
-                "font",
-                "size",
-                "bold",
-                "italic",
-                "underline",
-                "strike",
-                "blockquote",
-                "list",
-                "bullet",
-                "indent",
-                "link",
-                "color",
-                "background",
-                "align",
-              ]}
-              placeholder="Write your comment here..."
-            />
-            <Box
-              sx={{ display: "flex", justifyContent: "space-between", mt: 6 }}
-            >
-              <Button
-                onClick={handleSubmit}
-                variant="contained"
-                fullWidth
-                color="success"
+                }}
+                formats={[
+                  "header",
+                  "font",
+                  "size",
+                  "bold",
+                  "italic",
+                  "underline",
+                  "strike",
+                  "blockquote",
+                  "list",
+                  "bullet",
+                  "indent",
+                  "link",
+                  "color",
+                  "background",
+                  "align",
+                ]}
+                placeholder="Write your comment here..."
+              />
+              <Box
+                sx={{ display: "flex", justifyContent: "space-between", mt: 6 }}
               >
-                {editMode ? "Update Comment" : "Add Comment"}
-              </Button>
-              {editMode && (
                 <Button
-                  onClick={() => {
-                    setEditMode(false);
-                    setEditCommentId(null);
-                    setCommentText(""); // Metin alanını temizle
-                  }}
+                  onClick={handleSubmit}
                   variant="contained"
                   fullWidth
-                  color="error"
+                  color="success"
                 >
-                  Cancel Edit
+                  {editMode ? "Update Comment" : "Add Comment"}
                 </Button>
-              )}
+                {editMode && (
+                  <Button
+                    onClick={() => {
+                      setEditMode(false);
+                      setEditCommentId(null);
+                      setCommentText(""); // Metin alanını temizle
+                    }}
+                    variant="contained"
+                    fullWidth
+                    color="error"
+                  >
+                    Cancel Edit
+                  </Button>
+                )}
+              </Box>
             </Box>
           </Box>
-        </Box>
-        <Box mt={12} display="flex" flexWrap="wrap" justifyContent="center">
-          {comments?.map((comment) => (
-            <CommentCard
-              key={comment?._id}
-              handleComments={handleComments}
-              {...comment}
-              users={users}
-              onEdit={handleEdit}
-              onCommentChange={onCommentChange}
-            />
-          ))}
         </Box>
       </Container>
     </>

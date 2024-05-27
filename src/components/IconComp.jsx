@@ -1,5 +1,3 @@
-// IconComp.js
-
 import { Button, Tooltip } from "@mui/material";
 import { BiLike } from "react-icons/bi";
 import { GoCommentDiscussion } from "react-icons/go";
@@ -11,11 +9,12 @@ import { useEffect, useState } from "react";
 import useAxios from "../services/useAxios";
 import { setEditMode, setShowComments } from "../features/blogsSlice";
 import { toastErrorNotify } from "../helper/ToastNotify";
+import ConfirmationDialog from "./ConfirmationDialog";
 
-const IconComp = ({ blog, users, inBlog, comment, setComment}) => {
+const IconComp = ({ blog, users, inBlog, comment, setComment }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { liked} = useSelector((state) => state.blogs);
+  const { liked } = useSelector((state) => state.blogs);
   const { currentUserId } = useSelector((state) => state.auth.user);
   const { likesss, deleteBlog } = useBlogRequests();
   const { axiosPublic } = useAxios();
@@ -24,7 +23,7 @@ const IconComp = ({ blog, users, inBlog, comment, setComment}) => {
     blog?.likes?.includes(currentUserId)
   );
   const [likeCount, setLikeCount] = useState(blog?.likes?.length || 0);
-  
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const getLikers = (likes) => {
     return (
@@ -35,25 +34,22 @@ const IconComp = ({ blog, users, inBlog, comment, setComment}) => {
   };
 
   const handleLike = async () => {
+    if (currentUserId) {
+      await likesss(blog?._id);
 
-   if (currentUserId){
-    await likesss(blog?._id);
-    if (inBlog) {
       const updatedBlog = await getUpdatedBlog();
-      setLikers(getLikers(updatedBlog.likes));
-      setUserLiked(updatedBlog.likes?.includes(currentUserId));
-      setLikeCount(updatedBlog.likes?.length || 0);
+      setLikers(getLikers(updatedBlog?.likes));
+      setUserLiked(updatedBlog?.likes?.includes(currentUserId));
+      setLikeCount(updatedBlog?.likes?.length || 0);
+    } else {
+      toastErrorNotify("You must login!");
     }
-   }else {
-    toastErrorNotify("You must login!");
-   }
-    
   };
 
   const getUpdatedBlog = async () => {
     try {
       const response = await axiosPublic("/blogs");
-      console.log(response)
+      console.log(response);
       const updatedBlog = response.data.data.find((b) => b._id === blog._id);
       return updatedBlog;
     } catch (error) {
@@ -66,7 +62,7 @@ const IconComp = ({ blog, users, inBlog, comment, setComment}) => {
     if (!inBlog && !currentUserId) {
       toastErrorNotify("You must login!");
     } else if (!inBlog && currentUserId) {
-      dispatch(setShowComments())
+      dispatch(setShowComments());
       navigate(`/details/${blog._id}`);
     } else {
       setComment(!comment);
@@ -88,6 +84,17 @@ const IconComp = ({ blog, users, inBlog, comment, setComment}) => {
       })
     );
   };
+
+  const handleDeleteClick = () => {
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    setConfirmOpen(false);
+    await deleteBlog(blog?._id);
+    navigate("/");
+  };
+
   useEffect(() => {
     setLikers(getLikers(blog?.likes));
     setLikeCount(blog?.likes?.length || 0);
@@ -100,8 +107,6 @@ const IconComp = ({ blog, users, inBlog, comment, setComment}) => {
     }
   }, [liked, blog?._id]);
 
-  
-  
   return (
     <div className="flex justify-between flex-nowrap items-center space-x-4 mt-2 mb-2">
       <div className="flex justify-between flex-nowrap items-center space-x-4 mx-2 gap-4">
@@ -154,13 +159,19 @@ const IconComp = ({ blog, users, inBlog, comment, setComment}) => {
               variant="outlined"
               size="small"
               color="warning"
-              onClick={() => deleteBlog(blog?._id)}
+              onClick={handleDeleteClick}
             >
-              <Link to={"/"}>Delete Blog</Link>
+              Delete Blog
             </Button>
           </div>
         )}
       </div>
+      <ConfirmationDialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleConfirmDelete}
+        message="Are you sure you want to delete this blog?"
+      />
     </div>
   );
 };

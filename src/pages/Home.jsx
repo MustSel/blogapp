@@ -9,25 +9,32 @@ import Card from "../components/Card";
 import { Button, Pagination, Stack } from "@mui/material";
 import ScrollToTop from "../components/ScrollToTop";
 
-function Home({ inBlog, id }) {
+function Home({ inProfile, id }) {
   const { currentUserId } = useSelector((state) => state.auth.user);
   const { getBlogs, getUsers, getUserBlogs } = useBlogRequests();
-  const { blogs, users, pages, userBlogs } = useSelector(
+  const { blogs, users, pages, userBlogs,liked } = useSelector(
     (state) => state.blogs
   );
   const [currentPage, setCurrentPage] = useState(pages?.current || 1);
-  const { liked } = useSelector((state) => state.blogs);
+  
   const [isPublish, setIsPublish] = useState(true);
 
   useEffect(() => {
-    if (inBlog) {
+    if (inProfile) {
       getUserBlogs(id, currentPage, isPublish);
+      
     } else {
       getBlogs(currentPage);
       getUsers();
     }
   }, [currentPage, liked, id, isPublish]);
 
+  useEffect(() => {
+    if(inProfile){
+      setCurrentPage(1)
+    }
+  }, [inProfile])
+  
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
@@ -39,7 +46,7 @@ function Home({ inBlog, id }) {
         <Box sx={{ p: 3 }}>
           <section className="mt-12 mx-auto px-4 max-w-screen-xl md:px-8">
             <div className="text-center">
-              {inBlog ? (
+              {inProfile ? (
                 <Box
                   sx={{
                     display: "flex",
@@ -79,7 +86,7 @@ function Home({ inBlog, id }) {
               )}
             </div>
             <div className="mt-12 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-              {(inBlog
+              {(inProfile
                 ? isPublish
                   ? userBlogs.published
                   : userBlogs.drafted
@@ -113,18 +120,10 @@ function Home({ inBlog, id }) {
 
 export default Home;
 
-//? update user fonk
 
-//? categories search fonksi
+
+
 //?about
 //?404
-//?profile page buton to profil
-
-//? delete blog warning
-
-//?search buton
-//?categories için home kopyala
 
 
-//?arandıktan sonra beyen yapınca sayfa yenileniyor home atıyor
-//?detail içinde yoruma basınca  yorumların oldugu yere gelsin

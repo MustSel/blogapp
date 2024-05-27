@@ -25,7 +25,7 @@ const useBlogRequests = () => {
       const res = await axiosPublic(
         "/blogs/?sort[createdAt]=desc&limit=6&page=" + page
       );
-      console.log(res);
+      
       dispatch(getBlogsSuccess(res.data));
     } catch (error) {
       console.log(error);
@@ -43,7 +43,7 @@ const useBlogRequests = () => {
           "&filter[userId]=" +
           id
       );
-
+      
       dispatch(getUserBlogsSuccess({ data, isPublish }));
     } catch (error) {
       console.log(error);
@@ -76,11 +76,11 @@ const useBlogRequests = () => {
     try {
       if (id) {
         const { data } = await axiosAdminToken("/users/" + id);
-        console.log(data);
+       
         dispatch(getSingleUserSuccess(data));
       } else {
         const { data } = await axiosAdminToken("/users");
-        console.log(data);
+        
         dispatch(getUsersSuccess(data));
       }
     } catch (error) {
@@ -91,7 +91,7 @@ const useBlogRequests = () => {
   const likesss = async (id) => {
     try {
       const { data } = await axiosToken.post("/blogs/" + id + "/postLike", {});
-      console.log(data);
+      
       dispatch(likedSuccess({ id, data }));
     } catch (error) {
       console.log(error);
@@ -100,7 +100,7 @@ const useBlogRequests = () => {
   const addBlog = async (blogData) => {
     try {
       const { data } = await axiosToken.post("/blogs/", blogData);
-      console.log(data);
+      
       toastSuccessNotify("Blog Başarıyla Paylaşıldı.");
       navigate("/details/" + data.data._id);
     } catch (error) {
@@ -121,8 +121,8 @@ const useBlogRequests = () => {
   };
   const deleteBlog = async (id) => {
     try {
-      const res = await axiosToken.delete("/blogs/" + id);
-      console.log(res);
+      await axiosToken.delete("/blogs/" + id);
+      
       toastSuccessNotify("Blog Başarıyla Silindi");
     } catch (error) {
       console.log(error);
@@ -148,7 +148,7 @@ const useBlogRequests = () => {
         const { data } = await axiosToken(
           "/comments/?filter[userId]=" + userId
         );
-        console.log(data);
+        
         dispatch(getUserCommentsSuccess(data));
       }
     } catch (error) {

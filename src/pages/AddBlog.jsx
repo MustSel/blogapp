@@ -23,7 +23,7 @@ const AddBlog = () => {
     image: "",
     content: "",
     categoryId: "",
-    isPublish: false,
+    isPublish: true,
   });
   const [previewMode, setPreviewMode] = useState(false); 
   const dispatch = useDispatch();
@@ -83,7 +83,7 @@ const AddBlog = () => {
         image: "",
         content: "",
         categoryId: "",
-        isPublish: false,
+        isPublish: true,
       })
 
     }

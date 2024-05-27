@@ -22,10 +22,11 @@ const initialState = {
       image: "",
       content: "",
       categoryId: "",
-      isPublish: false,
+      isPublish: true,
     },
   },
   showComments: false,
+  showLike: false,
   loading: false,
   error: false,
 };

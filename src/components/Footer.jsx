@@ -9,7 +9,7 @@ function Footer(props) {
           MustSel
         </Link>{' '}
         {new Date().getFullYear()}
-        {'.'}
+        
       </Typography>
     );
   }

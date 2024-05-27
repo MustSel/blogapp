@@ -10,15 +10,36 @@ import {
 import avatar from "../assets/avatar.png";
 import { useSelector } from "react-redux";
 import DOMPurify from "dompurify";
+import { useState } from "react";
+import ConfirmationDialog from "./ConfirmationDialog";
 
-const CommentCard = ({ users, comment, __v, createdAt, updatedAt, _id,  userId, onEdit, handleComments, onCommentChange }) => {
+const CommentCard = ({
+  users,
+  comment,
+  __v,
+  createdAt,
+  updatedAt,
+  _id,
+  userId,
+  onEdit,
+  handleComments,
+  onCommentChange,
+}) => {
   const { currentUserId } = useSelector((state) => state.auth.user);
   const author = users.find((user) => user._id === userId?._id) || {};
   const cleanHTML = DOMPurify.sanitize(comment);
-  const handleDelete = async () => {
-    await handleComments(_id)
-    onCommentChange()
-  }
+
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const handleDeleteClick = () => {
+    setConfirmOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    setConfirmOpen(false);
+    await handleComments(_id);
+    onCommentChange();
+  };
 
   return (
     <Card sx={{ maxWidth: 800, width: "100%", marginBottom: 2 }}>
@@ -46,11 +67,11 @@ const CommentCard = ({ users, comment, __v, createdAt, updatedAt, _id,  userId, 
           </Box>
         </Box>
         <Typography variant="p" component="h1" gutterBottom>
-        <div dangerouslySetInnerHTML={{ __html: cleanHTML }} />
+          <div dangerouslySetInnerHTML={{ __html: cleanHTML }} />
         </Typography>
       </CardContent>
       {userId?._id == currentUserId && (
-        <CardActions sx={{justifyContent:"end"}}>
+        <CardActions sx={{ justifyContent: "end" }}>
           <Button
             sx={{ marginRight: "5px" }}
             variant="outlined"
@@ -65,12 +86,18 @@ const CommentCard = ({ users, comment, __v, createdAt, updatedAt, _id,  userId, 
             variant="outlined"
             size="small"
             color="error"
-            onClick={handleDelete}
+            onClick={handleDeleteClick}
           >
             Delete
           </Button>
         </CardActions>
       )}
+      <ConfirmationDialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        message="Are you sure you want to delete this comment?"
+      />
     </Card>
   );
 };

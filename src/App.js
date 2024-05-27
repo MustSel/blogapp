@@ -7,7 +7,7 @@ import { ToastContainer } from "react-toastify";
 import Navbar from "./components/Navbar";
 import { BrowserRouter } from "react-router-dom";
 import Footer from "./components/Footer";
-import { CssBaseline } from "@mui/material";
+import { CssBaseline, Box } from "@mui/material";
 
 function App() {
   const theme = createTheme({
@@ -20,20 +20,36 @@ function App() {
       },
     },
   });
+
   return (
-    <>
-      <BrowserRouter>
-        <ThemeProvider theme={theme}>
-          <Provider store={store}>
+    <BrowserRouter>
+      <ThemeProvider theme={theme}>
+        <Provider store={store}>
           <CssBaseline />
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              minHeight: '100vh',
+            }}
+          >
             <Navbar />
-            <AppRouter />
-            <Footer sx={{ mt: 5, mb:2 }}/>
-          </Provider>
-          <ToastContainer />
-        </ThemeProvider>
-      </BrowserRouter>
-    </>
+            <Box
+              component="main"
+              sx={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <AppRouter />
+            </Box>
+            <Footer sx={{ mt: 5, mb: 2 }} />
+          </Box>
+        </Provider>
+        <ToastContainer />
+      </ThemeProvider>
+    </BrowserRouter>
   );
 }
 
