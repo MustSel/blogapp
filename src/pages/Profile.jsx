@@ -4,7 +4,7 @@ import Home from "./Home";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import useBlogRequests from "../services/useBlogRequests";
-import { useSelector } from "react-redux";
+
 
 const Profile = () => {
   const { id } = useParams();

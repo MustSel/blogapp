@@ -109,7 +109,7 @@ const IconComp = ({ blog, users, inBlog, comment, setComment }) => {
 
   return (
     <div className="flex justify-between flex-nowrap items-center space-x-4 mt-2 mb-2">
-      <div className="flex justify-between flex-nowrap items-center space-x-4 mx-2 gap-4">
+      <div className="flex justify-between flex-nowrap items-center space-x-4 mx-2">
         <Tooltip
           title={likers?.length ? likers.join(", ") : "No likes yet"}
           arrow
@@ -139,14 +139,23 @@ const IconComp = ({ blog, users, inBlog, comment, setComment }) => {
       </div>
       <div>
         {!inBlog && (
-          <Button sx={{ marginRight: "5px" }} variant="contained">
-            <Link to={`/details/${blog._id}`}>Read More</Link>
-          </Button>
+          <Button
+          sx={{
+            marginRight: "1%",
+            whiteSpace:"nowrap",
+            "@media (min-width: 640px) and (max-width: 730px)": {
+              whiteSpace: "wrap"
+            }
+          }}
+          variant="contained"
+        >
+          <Link to={`/details/${blog._id}`}>Read More</Link>
+        </Button>
         )}
         {inBlog && blog?.userId?._id === currentUserId && (
           <div>
             <Button
-              sx={{ marginRight: "5px" }}
+              sx={{ marginRight: "5%" }}
               variant="outlined"
               size="small"
               color="info"
@@ -155,7 +164,7 @@ const IconComp = ({ blog, users, inBlog, comment, setComment }) => {
               <Link to={"/addblog"}>Edit Blog</Link>
             </Button>
             <Button
-              sx={{ marginRight: "5px" }}
+              sx={{ marginRight: "5%" }}
               variant="outlined"
               size="small"
               color="warning"

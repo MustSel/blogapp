@@ -19,7 +19,7 @@ const SearchCard = ({ blog, users,categories }) => {
             src={users.find(user => user?._id === blog?.userId)?.image || defaultAuthorImage}
             className="w-full h-full rounded-full cursor-pointer"
             alt={blog?.userId}
-            onClick={() => navigate(`profil/${blog?.userId}`)}
+            onClick={() => navigate(`/profil/${blog?.userId}`)}
           />
           <div className="text-center mt-2 text-gray-900">
             {users.find(user => user._id === blog?.userId)?.username || "Unknown User"}

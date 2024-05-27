@@ -37,7 +37,7 @@ const Card = ({ blog, users }) => {
             }
             className="w-full h-full rounded-full cursor-pointer"
             alt={blog?.userId}
-           onClick={()=> navigate (`profil/${blog?.userId}`)}
+           onClick={()=> navigate (`/profil/${blog?.userId}`)}
            
           />
         </div>
@@ -60,14 +60,14 @@ const Card = ({ blog, users }) => {
         </p>
       </div>
 
-      <div className=" w-96">
+      
         <IconComp
           users={users}
           blog={blog}
          
           
         />
-      </div>
+      
     </article>
   );
 };
