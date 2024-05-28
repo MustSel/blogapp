@@ -17,6 +17,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import useBlogRequests from "../services/useBlogRequests";
 import { setEditMode } from "../features/blogsSlice";
+
 const AddBlog = () => {
   const [formData, setFormData] = useState({
     title: "",
@@ -30,6 +31,7 @@ const AddBlog = () => {
   const { categories, editMode } = useSelector((state) => state.blogs);
  
   const { addBlog, editBlog } = useBlogRequests();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -37,7 +39,14 @@ const AddBlog = () => {
       [name]: value,
     }));
   };
-  
+
+  const capitalizeTitle = (title) => {
+    return title
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
+
   const handleToggle = () => {
     setFormData((prevData) => ({
       ...prevData,
@@ -55,10 +64,15 @@ const AddBlog = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const capitalizedFormData = {
+      ...formData,
+      title: capitalizeTitle(formData.title),
+    };
+
     if (editMode.mode) {
-      editBlog(editMode?.blogId, formData);
+      editBlog(editMode?.blogId, capitalizedFormData);
     } else {
-      addBlog(formData);
+      addBlog(capitalizedFormData);
     }
     dispatch(
       setEditMode({
@@ -162,7 +176,7 @@ const AddBlog = () => {
                 {previewMode ? "Edit" : "Preview"}
               </Button>
               <Button type="submit" variant="contained" color="primary">
-                {editMode.mode ? "UpdateBlog" : "Add Blog"}
+                {editMode.mode ? "Update Blog" : "Add Blog"}
               </Button>
             </Box>
           </form>

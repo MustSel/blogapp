@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 
 import useBlogRequests from "../services/useBlogRequests";
 import Card from "../components/Card";
-import { Button, Pagination, Stack } from "@mui/material";
+import { Button, Grid, Pagination, Stack } from "@mui/material";
 import ScrollToTop from "../components/ScrollToTop";
 
 function Home({ inProfile, id }) {
@@ -85,22 +85,18 @@ function Home({ inProfile, id }) {
                 </div>
               )}
             </div>
-            <div className="mt-12 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            <Grid container spacing={2}> 
               {(inProfile
                 ? isPublish
                   ? userBlogs.published
                   : userBlogs.drafted
                 : blogs
               )?.map((blog, idx) => (
-                <Card
-                  key={idx}
-                  blog={blog}
-                  liked={liked}
-                  users={users}
-                  page={currentPage}
-                />
+                <Grid item xs={12} sm={6} md={4} key={idx}> 
+            <Card blog={blog} liked={liked} users={users} page={currentPage} />
+          </Grid>
               ))}
-            </div>
+            </Grid>
           </section>
           <Stack spacing={2} alignItems="center" mt={4}>
             <Pagination

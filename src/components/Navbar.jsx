@@ -106,15 +106,22 @@ export default () => {
   const navigate = useNavigate()
   const { axiosToken } = useAxios();
   
-
+  const capitalizeSearch = (search) => {
+    return search
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
 
 
   const handleSearch = (e) => {
     e.preventDefault();
-    const getSearchedBlogs = async (searchQuery) => {
+    const capitalizedSearch = capitalizeSearch(searchQuery);
+    
+    const getSearchedBlogs = async (query) => {
       dispatch(fetchStart());
       try {
-        const res = await axiosToken(`/blogs/?search[title]=${searchQuery}`);
+        const res = await axiosToken(`/blogs/?search[title]=${query}`);
         
         dispatch(getBlogsSuccess(res.data));
         navigate("searchresults")
@@ -123,10 +130,10 @@ export default () => {
       }
     };
     if (searchQuery.length > 0) {
-      getSearchedBlogs(searchQuery);
+      getSearchedBlogs(capitalizedSearch);
     }
-
-    
+    console.log(capitalizedSearch)
+    console.log(searchQuery)
   };
 
   const categoryData = [
