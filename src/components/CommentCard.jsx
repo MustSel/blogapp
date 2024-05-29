@@ -58,7 +58,7 @@ const CommentCard = ({
               <Typography variant="body2" mr={1} color="text.secondary">
                 {new Date(createdAt).toLocaleString()}
               </Typography>
-              {__v !== 0 && (
+              {createdAt !== updatedAt && (
                 <Typography variant="caption" color="text.secondary">
                   (updated: {new Date(updatedAt).toLocaleString()})
                 </Typography>

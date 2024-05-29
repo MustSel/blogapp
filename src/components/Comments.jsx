@@ -10,7 +10,15 @@ const Comments = ({ id, comments, users, onCommentChange }) => {
   const [commentText, setCommentText] = useState("");
   const [editMode, setEditMode] = useState(false);
   const [editCommentId, setEditCommentId] = useState(null);
-  const hrRef = useRef(null);
+  const editRef = useRef(null);
+  const titleRef = useRef(null)
+
+  console.log(comments)
+  const sortedComments = [...comments].sort((a, b) => {
+    const dateA = new Date(a.createdAt);
+    const dateB = new Date(b.createdAt);
+    return dateB - dateA; 
+  });
 
   const handleChange = (value) => {
     setCommentText(value);
@@ -20,7 +28,7 @@ const Comments = ({ id, comments, users, onCommentChange }) => {
     setCommentText(comment);
     setEditMode(true);
     setEditCommentId(commentId);
-    hrRef.current.scrollIntoView({ behavior: "smooth" });
+    editRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
   const handleSubmit = async (e) => {
@@ -38,17 +46,19 @@ const Comments = ({ id, comments, users, onCommentChange }) => {
     setCommentText("");
     setEditMode(false);
     setEditCommentId(null);
+    titleRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
     <>
       <Box  mt={8} mb={4}>
-        <hr ref={hrRef} />
+        <hr />
       </Box>
 
       <Container maxWidth="md">
         <Box display="flex" flexDirection="column" alignItems="center">
           <Typography
+            ref={titleRef}
             mt={4}
             variant="h4"
             sx={{ mb: 2 }}
@@ -58,7 +68,7 @@ const Comments = ({ id, comments, users, onCommentChange }) => {
             Comments
           </Typography>
           <Box mt={6} display="flex" flexWrap="wrap" justifyContent="center">
-            {comments?.map((comment) => (
+            {sortedComments?.map((comment) => (
               <CommentCard
                 key={comment?._id}
                 handleComments={handleComments}
@@ -68,7 +78,7 @@ const Comments = ({ id, comments, users, onCommentChange }) => {
                 onCommentChange={onCommentChange}
               />
             ))}
-            <Box sx={{ width: "100%", maxWidth: 800 }}>
+            <Box ref={editRef} sx={{ width: "100%", maxWidth: 800 }}>
               <ReactQuill
                 value={commentText}
                 onChange={handleChange}
