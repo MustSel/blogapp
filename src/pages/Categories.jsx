@@ -53,9 +53,9 @@ const Categories = () => {
                 </p>
               </div>
             </div>
-            <Grid container spacing={2}>  
+            <Grid container gap={2} justifyContent={"center"} maxWidth={"1500px"} margin={"auto"}>   
         {blogs?.map((blog, idx) => (
-          <Grid item xs={12} sm={6} md={4} key={idx}> 
+          <Grid item key={idx}> 
             <BlogCard blog={blog} liked={liked} users={users} page={currentPage} />
           </Grid>
         ))}

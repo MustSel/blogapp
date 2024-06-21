@@ -108,7 +108,7 @@ const IconComp = ({ blog, users, inBlog, comment, setComment }) => {
   }, [liked, blog?._id]);
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',  gap: 1, width: '100%', mt: 2 }}>
+    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',  gap: 1, width: '90%', m:'auto', mb: 2 }}>
       <div className="flex justify-between flex-nowrap items-center space-x-4 mx-2">
         <Tooltip
           title={likers?.length ? likers.join(", ") : "No likes yet"}
