@@ -1,4 +1,4 @@
-import { Button, Tooltip } from "@mui/material";
+import { Box, Button, Tooltip } from "@mui/material";
 import { BiLike } from "react-icons/bi";
 import { GoCommentDiscussion } from "react-icons/go";
 import { GrView } from "react-icons/gr";
@@ -108,7 +108,7 @@ const IconComp = ({ blog, users, inBlog, comment, setComment }) => {
   }, [liked, blog?._id]);
 
   return (
-    <div className="flex justify-between flex-nowrap items-center space-x-4 mt-2 mb-2">
+    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',  gap: 1, width: '100%', mt: 2 }}>
       <div className="flex justify-between flex-nowrap items-center space-x-4 mx-2">
         <Tooltip
           title={likers?.length ? likers.join(", ") : "No likes yet"}
@@ -137,51 +137,42 @@ const IconComp = ({ blog, users, inBlog, comment, setComment }) => {
           {blog?.countOfVisitors}
         </span>
       </div>
-      <div>
+      <Box sx={{ flexGrow: 1, textAlign: 'right' }}>
         {!inBlog && (
-          <Button
-          sx={{
-            marginRight: "1%",
-            whiteSpace:"nowrap",
-            "@media (min-width: 640px) and (max-width: 730px)": {
-              whiteSpace: "wrap"
-            }
-          }}
-          variant="contained"
-        >
-          <Link to={`/details/${blog._id}`}>Read More</Link>
+          <Button variant="contained" size="small" component={Link} to={`/details/${blog._id}`}>
+          Read More
         </Button>
         )}
         {inBlog && blog?.userId?._id === currentUserId && (
-          <div>
+          <Box display={"flex"} justifySelf={"end"} sx={{backgroundColor: "goldenrod", width: "150px"}}>
             <Button
-              sx={{ marginRight: "5%" }}
+              sx={{ marginRight: "2%" }}
               variant="outlined"
               size="small"
               color="info"
               onClick={handleEdit}
             >
-              <Link to={"/addblog"}>Edit Blog</Link>
+              <Link to={"/addblog"}>Edit</Link>
             </Button>
             <Button
-              sx={{ marginRight: "5%" }}
+              
               variant="outlined"
               size="small"
               color="warning"
               onClick={handleDeleteClick}
             >
-              Delete Blog
+              Delete
             </Button>
-          </div>
+          </Box>
         )}
-      </div>
+      </Box>
       <ConfirmationDialog
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
         onConfirm={handleConfirmDelete}
         message="Are you sure you want to delete this blog?"
       />
-    </div>
+    </Box>
   );
 };
 

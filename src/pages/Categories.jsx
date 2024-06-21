@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 import { useDispatch, useSelector } from "react-redux";
 
 import useBlogRequests from "../services/useBlogRequests";
-import Card from "../components/Card";
+import BlogCard from "../components/BlogCard";
 import { Grid, Pagination, Stack } from "@mui/material";
 import ScrollToTop from "../components/ScrollToTop";
 import { fetchStart, getBlogsSuccess } from "../features/blogsSlice";
@@ -56,7 +56,7 @@ const Categories = () => {
             <Grid container spacing={2}>  
         {blogs?.map((blog, idx) => (
           <Grid item xs={12} sm={6} md={4} key={idx}> 
-            <Card blog={blog} liked={liked} users={users} page={currentPage} />
+            <BlogCard blog={blog} liked={liked} users={users} page={currentPage} />
           </Grid>
         ))}
       </Grid>

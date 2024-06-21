@@ -5,9 +5,10 @@ import Box from "@mui/material/Box";
 import { useSelector } from "react-redux";
 
 import useBlogRequests from "../services/useBlogRequests";
-import Card from "../components/Card";
+
 import { Button, Grid, Pagination, Stack } from "@mui/material";
 import ScrollToTop from "../components/ScrollToTop";
+import BlogCard from "../components/BlogCard";
 
 function Home({ inProfile, id }) {
   const { currentUserId } = useSelector((state) => state.auth.user);
@@ -85,15 +86,15 @@ function Home({ inProfile, id }) {
                 </div>
               )}
             </div>
-            <Grid container spacing={2}> 
+            <Grid container gap={2} justifyContent={"center"} maxWidth={"1500px"} margin={"auto"}> 
               {(inProfile
                 ? isPublish
                   ? userBlogs.published
                   : userBlogs.drafted
                 : blogs
               )?.map((blog, idx) => (
-                <Grid item xs={12} sm={6} md={4} key={idx}> 
-            <Card blog={blog} liked={liked} users={users} page={currentPage} />
+                <Grid item  key={idx}> 
+            <BlogCard blog={blog} liked={liked} users={users} page={currentPage} />
           </Grid>
               ))}
             </Grid>
