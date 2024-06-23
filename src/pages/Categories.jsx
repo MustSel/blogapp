@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import Box from "@mui/material/Box";
 
@@ -18,26 +18,36 @@ const Categories = () => {
   const { axiosToken } = useAxios();
 
   const { getUsers, liked } = useBlogRequests();
-  const { blogs, users, pages } = useSelector((state) => state.blogs);
+  const { blogs, users, pages, categories } = useSelector(
+    (state) => state.blogs
+  );
   const [currentPage, setCurrentPage] = useState(pages?.current || 1);
-  const handlePageChange = (event, value) => {
+  const handlePageChange = useCallback((event, value) => {
     setCurrentPage(value);
-  };
+  }, []); 
   const getCategoryBlogs = async (id) => {
     dispatch(fetchStart());
     try {
       const res = await axiosToken(`/blogs/?search[categoryId]=${id}`);
-
+      console.log(res);
       dispatch(getBlogsSuccess(res.data));
     } catch (error) {
       console.log(error);
     }
   };
 
+  const MemoizedBlogCard = React.memo(BlogCard);
+  const categoryName = useMemo(() => {
+    return categories?.find((cat) => cat._id === id)?.name;
+  }, [id, categories]);
+  console.log("categories render oldu");
   useEffect(() => {
     getCategoryBlogs(id);
+  }, [id]);
+
+  useEffect(() => {
     getUsers();
-  }, [id, liked]);
+  }, [liked]);
 
   return (
     <>
@@ -47,19 +57,29 @@ const Categories = () => {
           <section className="mt-12 mx-auto px-4 max-w-screen-xl md:px-8">
             <div className="text-center">
               <div>
-                <h1 className="text-3xl text-gray-800 font-semibold">Blog</h1>
-                <p className="mt-3 text-gray-500">
-                  Blogs that are loved by the community. Updated every hour.
-                </p>
+                <h1 className="text-3xl text-gray-800 font-semibold mb-5">
+                  {categoryName} Blogs
+                </h1>
               </div>
             </div>
-            <Grid container gap={2} justifyContent={"center"} maxWidth={"1500px"} margin={"auto"}>   
-        {blogs?.map((blog, idx) => (
-          <Grid item key={idx}> 
-            <BlogCard blog={blog} liked={liked} users={users} page={currentPage} />
-          </Grid>
-        ))}
-      </Grid>
+            <Grid
+              container
+              gap={2}
+              justifyContent={"center"}
+              maxWidth={"1500px"}
+              margin={"auto"}
+            >
+              {blogs?.map((blog, idx) => (
+                <Grid item key={idx}>
+                  <MemoizedBlogCard
+                    blog={blog}
+                    liked={liked}
+                    users={users}
+                    page={currentPage}
+                  />
+                </Grid>
+              ))}
+            </Grid>
           </section>
           <Stack spacing={2} alignItems="center" mt={4}>
             <Pagination

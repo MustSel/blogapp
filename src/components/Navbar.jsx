@@ -132,8 +132,7 @@ export default () => {
     if (searchQuery.length > 0) {
       getSearchedBlogs(capitalizedSearch);
     }
-    console.log(capitalizedSearch)
-    console.log(searchQuery)
+    setSearchQuery("")
   };
 
   const categoryData = [

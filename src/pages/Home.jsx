@@ -79,8 +79,8 @@ function Home({ inProfile, id }) {
                 </Box>
               ) : (
                 <div>
-                  <h1 className="text-3xl text-gray-800 font-semibold">Blog</h1>
-                  <p className="mt-3 text-gray-500">
+                  <h1 className="text-3xl text-gray-800 font-semibold">Blogs</h1>
+                  <p className="mt-3 mb-5 text-gray-500">
                     Blogs that are loved by the community. Updated every hour.
                   </p>
                 </div>

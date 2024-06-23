@@ -108,7 +108,7 @@ const IconComp = ({ blog, users, inBlog, comment, setComment }) => {
   }, [liked, blog?._id]);
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',  gap: 1, width: '90%', m:'auto', mb: 2 }}>
+    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',  gap: 1, width: !inBlog ? '90%' : '100%', m:'auto', mb: 2 }}>
       <div className="flex justify-between flex-nowrap items-center space-x-4 mx-2">
         <Tooltip
           title={likers?.length ? likers.join(", ") : "No likes yet"}
@@ -137,14 +137,14 @@ const IconComp = ({ blog, users, inBlog, comment, setComment }) => {
           {blog?.countOfVisitors}
         </span>
       </div>
-      <Box sx={{ flexGrow: 1, textAlign: 'right' }}>
+      <Box sx={{ flexGrow: 0, textAlign: 'right' }}>
         {!inBlog && (
           <Button variant="contained" size="small" component={Link} to={`/details/${blog._id}`}>
           Read More
         </Button>
         )}
         {inBlog && blog?.userId?._id === currentUserId && (
-          <Box display={"flex"} justifySelf={"end"} sx={{backgroundColor: "goldenrod", width: "150px"}}>
+          <Box display={"flex"}>
             <Button
               sx={{ marginRight: "2%" }}
               variant="outlined"
